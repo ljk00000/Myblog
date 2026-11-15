@@ -12,6 +12,7 @@ useBlogSeo(() => ({ title: article.value?.seoTitle || article.value?.title || '�
 </script>
 <template>
   <article v-if="article" class="detail-page">
+    <ReadingProgress />
     <nav class="breadcrumbs" aria-label="当前位置"><NuxtLink to="/">首页</NuxtLink><span aria-hidden="true">/</span><NuxtLink to="/articles">文章</NuxtLink></nav>
     <header class="detail-heading">
       <div class="card-meta"><NuxtLink v-if="article.categoryId && article.categoryName" :to="{ path: '/articles', query: { categoryId: article.categoryId } }" class="category-label">{{ article.categoryName }}</NuxtLink><span v-if="article.pinned" class="badge">置顶</span></div>

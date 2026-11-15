@@ -18,7 +18,7 @@ useBlogSeo(() => ({ title: q.value ? `搜索：${q.value}` : '搜索', descripti
 </script>
 <template>
   <div>
-    <header class="page-heading"><p class="eyebrow">SEARCH</p><h1>寻找一点灵感</h1><p>在公开文章与资源中，找到你关心的内容。</p></header>
+    <header class="page-heading"><p class="eyebrow">FOLLOW YOUR CURIOSITY</p><h1>寻找一点灵感<span class="title-dot">.</span></h1><p>在公开文章与资源中，找到你关心的内容。</p></header>
     <form class="search-form" role="search" @submit.prevent="submit"><label class="sr-only" for="global-search">搜索文章与资源</label><AppIcon name="search" /><input id="global-search" v-model="input" type="search" name="q" maxlength="200" placeholder="输入关键词，开始搜索…"><button class="button" type="submit" :disabled="!input.trim() || searching">{{ searching ? '搜索中…' : '搜索' }}</button></form>
     <ContentState v-if="!q" title="从一个关键词开始" description="输入标题或内容中的关键词，同时查找文章与资源。" />
     <div v-else id="results" class="search-results">

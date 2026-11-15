@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'zh-CN' },
-      meta: [{ name: 'theme-color', content: '#f8faf8' }],
+      meta: [{ name: 'theme-color', content: '#090b13' }],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
   },

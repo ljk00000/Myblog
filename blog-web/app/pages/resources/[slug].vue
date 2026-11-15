@@ -12,6 +12,7 @@ useBlogSeo(() => ({ title: resource.value?.seoTitle || resource.value?.title || 
 </script>
 <template>
   <article v-if="resource" class="detail-page">
+    <ReadingProgress />
     <nav class="breadcrumbs" aria-label="当前位置"><NuxtLink to="/">首页</NuxtLink><span aria-hidden="true">/</span><NuxtLink to="/resources">资源</NuxtLink></nav>
     <header class="detail-heading"><div class="card-meta"><span class="category-label">{{ resource.type === 'file' ? '文件资源' : '链接资源' }}</span><NuxtLink v-if="resource.categoryId && resource.categoryName" :to="{ path: '/resources', query: { categoryId: resource.categoryId } }">{{ resource.categoryName }}</NuxtLink><span v-if="resource.featured" class="badge">精选</span></div><h1>{{ resource.title }}</h1><p v-if="resource.summary" class="detail-summary">{{ resource.summary }}</p><time v-if="isoDate(resource.publishTime)" class="detail-meta" :datetime="isoDate(resource.publishTime)">{{ formatDate(resource.publishTime) }}</time></header>
     <div class="resource-destination"><div><p class="eyebrow">{{ resource.type === 'file' ? '文件地址' : '资源地址' }}</p><p class="destination-url">{{ safeUrl(resource.url) ? resource.url : '此资源暂未提供有效地址' }}</p></div><a v-if="safeUrl(resource.url)" class="button" :href="safeUrl(resource.url)" target="_blank" rel="noopener noreferrer">{{ resource.type === 'file' ? '打开文件' : '访问资源' }}<AppIcon name="external" /><span class="sr-only">（在新窗口打开）</span></a><span v-else class="button disabled" aria-disabled="true">暂不可访问</span></div>

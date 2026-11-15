@@ -11,7 +11,7 @@ useBlogSeo(() => ({ title: '资源', description: '浏览公开的链接与文�
 </script>
 <template>
   <div>
-    <header class="page-heading"><p class="eyebrow">RESOURCES</p><h1>资源</h1><p>值得留存的链接与文件，在这里慢慢整理。</p></header>
+    <header class="page-heading"><p class="eyebrow">THE DISCOVERY SHELF</p><h1>资源<span class="title-dot">.</span></h1><p>值得留存的链接与文件，在这里慢慢整理。</p></header>
     <FilterBar :categories="categories" resource />
     <div v-if="categoryError" class="site-notice" role="status">分类暂时无法加载。<button class="text-button" type="button" @click="refreshCategories()">重试分类</button></div>
     <section id="results" class="results-section" aria-label="资源列表" :aria-busy="status === 'pending'">
