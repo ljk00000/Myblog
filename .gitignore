@@ -53,3 +53,17 @@ application-my.yaml
 /yudao-ui-app/unpackage/
 .DS_Store
 **/.DS_Store
+
+
+# Local agent state, frontend dependencies, and private environment files
+/.pi/
+node_modules/
+.pnpm-store/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+*.pem
+*.p12
+*.pfx
+*.key

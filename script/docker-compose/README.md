@@ -10,6 +10,7 @@
 script/docker-compose
 ├── README.md
 ├── docker-compose.yml       <-- 编排文件，相对路径均相对于本目录
+├── docker-compose.override.yml <-- 本机浏览器访问：gateway 48080、Nacos 控制台 18080，仅绑定 127.0.0.1
 ├── .env.example             <-- 环境变量示例，复制为 .env 后修改
 ├── .gitignore               <-- 忽略 .env、web/dist/
 ├── nginx
@@ -30,7 +31,7 @@ script/docker-compose
 
 请求链路：浏览器 → `web`（Nginx）→ `gateway` → 通过 Nacos 发现 `system-server`、`infra-server`。`gateway` 只依赖 Nacos，不连接 MySQL、Redis。
 
-容器之间通过服务名访问，服务注册到 Nacos 的是容器在 Compose 网络中的 IP，网关可以直接访问。MySQL、Redis、Nacos、网关默认不映射到宿主机，不会与本机已有的 3306、6379、8848、48080 冲突；需要时取消 `docker-compose.yml` 中对应 `ports` 的注释。
+容器之间通过服务名访问，服务注册到 Nacos 的是容器在 Compose 网络中的 IP，网关可以直接访问。基础编排不向宿主机映射 MySQL、Redis、Nacos 或网关端口；本仓库的 `docker-compose.override.yml` 会自动叠加本机回环地址上的网关 48080 和 Nacos 控制台 18080，供本地浏览器调试。其他环境应按需调整该覆盖文件。
 
 ## 前置条件
 
@@ -51,20 +52,26 @@ mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-serv
 
 ## 2. 准备前端产物
 
-前端是独立仓库，这里不构建前端源码。打包前确认前端生产环境配置：
-
-- 浏览器访问地址使用 Nginx 的同源地址，例如 `http://localhost:8080`，不要写 `gateway`、`127.0.0.1:48080` 等容器名或后端端口
-- API 路径为 `/admin-api`：`yudao-ui-admin-vue3` 为 `.env.prod` 的 `VITE_BASE_URL` + `VITE_API_URL`；`yudao-ui-admin-vben` 为 `apps/web-*/.env.production` 的 `VITE_BASE_URL`、`VITE_GLOB_API_URL`
-- 前端 `VITE_APP_CAPTCHA_ENABLE` 与 `.env` 中的 `YUDAO_CAPTCHA_ENABLE` 一致
-
-将打包产物目录中的内容（包含 `index.html`）复制到 `script/docker-compose/web/dist/`，在**源码根目录**执行：
+前端源码已纳入本仓库 `frontend`。在源码根目录执行：
 
 ```shell
-mkdir -p script/docker-compose/web/dist
-cp -R /path/to/前端打包产物目录/. script/docker-compose/web/dist/
+cd frontend
+pnpm install --frozen-lockfile
+cd ..
+node script/blog-admin/build-frontend.cjs
 ```
 
-例如 `yudao-ui-admin-vue3` 执行 `pnpm build:prod` 后为 `dist-prod`；`yudao-ui-admin-vben` 执行 `pnpm build:antd` 后为 `apps/web-antd/dist`。
+脚本默认使用同源 `/admin-api`、保留多租户、关闭验证码、清空默认登录账号密码和原项目统计，输出到 `frontend/dist-prod`。可以通过进程环境变量覆盖部署设置；验证码开关需与后端 `YUDAO_CAPTCHA_ENABLE` 一致。本机环境变量文件不提交。
+
+将 `frontend/dist-prod` 中的内容（包含 `index.html`）复制到 `script/docker-compose/web/dist/`。Windows PowerShell 可在源码根目录执行：
+
+```powershell
+New-Item -ItemType Directory -Force script/docker-compose/web/dist | Out-Null
+robocopy frontend/dist-prod script/docker-compose/web/dist /MIR
+# robocopy 返回码 0–7 表示复制成功，8 及以上表示失败。
+```
+
+首次初始化数据库后还需按 `script/blog-admin/README.md` 应用博客导航迁移并刷新精确缓存，再退出重新登录。
 
 ## 3. 配置环境变量
 
@@ -102,7 +109,7 @@ cp .env.example .env
 
 ## 4. Nacos 说明
 
-**内置 Nacos（默认）**：`COMPOSE_PROFILES=nacos`，Java 服务等待 Nacos 的 8848、9848 端口可连接后再启动。内置 Nacos 未开启客户端访问鉴权，且端口默认不对宿主机开放，只适合本机体验。首次访问控制台（取消 `ports` 注释后打开 http://127.0.0.1:18080）需要初始化 `nacos` 用户的密码。
+**内置 Nacos（默认）**：`COMPOSE_PROFILES=nacos`，Java 服务等待 Nacos 的 8848、9848 端口可连接后再启动。内置 Nacos 未开启客户端访问鉴权，仅适合本机体验。本仓库覆盖文件将控制台绑定到 `http://127.0.0.1:18080`；首次访问时需要初始化 `nacos` 用户的密码。
 
 **复用已部署的 Nacos**：本分支使用 `spring-cloud-alibaba` 2025.1.0.0，对应 `nacos-client` 3.1.1，建议使用 Nacos 3.x；内置 Nacos 3.0.3 已验证当前客户端的注册、发现与 `public` 命名空间配置读写。在 `.env` 中：
 

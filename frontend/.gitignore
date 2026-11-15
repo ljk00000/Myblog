@@ -1,0 +1,37 @@
+# Dependencies
+node_modules
+.pnpm-store/
+
+# Build outputs
+dist
+dist-ssr
+dist-*/
+/dist*
+coverage/
+*.tsbuildinfo
+
+# Tool caches
+**/.vitepress/cache/
+
+# Logs
+pnpm-debug
+*.log
+*-debug.log*
+*-error.log*
+
+# Local environment files are never published; use the root build script defaults.
+*.local
+.env
+.env.*
+!.env.example
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.idea
+.history
+
+# Generated / local tooling
+auto-*.d.ts
+output/
+.playwright-cli/
