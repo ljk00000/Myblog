@@ -119,7 +119,7 @@ services:
     # 使用模块自带的 Dockerfile，需先在源码根目录执行 mvn 打包，生成 yudao-gateway/target/yudao-gateway.jar
     build:
       context: ../../yudao-gateway
-    image: yudao-gateway:${IMAGE_TAG:-local}
+    image: yudao-gateway:${GATEWAY_IMAGE_TAG:-${IMAGE_TAG:-local}}
     restart: unless-stopped
     environment:
       <<: *common-env
@@ -171,6 +171,39 @@ services:
       nacos:
         condition: service_healthy
         required: false
+
+  blog-server:
+    build:
+      context: ../../yudao-module-blog
+    image: yudao-module-blog:${BLOG_IMAGE_TAG:-local}
+    restart: unless-stopped
+    environment:
+      <<: *app-env
+      BLOG_SITE_TENANT_ID: ${BLOG_SITE_TENANT_ID:-1}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+        required: false
+
+  blog-web:
+    build:
+      context: ../../blog-web
+    image: myblog-web:${BLOG_IMAGE_TAG:-local}
+    restart: unless-stopped
+    environment:
+      NUXT_API_BASE: http://gateway:48080/app-api/blog
+      HOST: 0.0.0.0
+      PORT: 3000
+      TZ: Asia/Shanghai
+    ports:
+      - "127.0.0.1:${BLOG_WEB_PORT:-3000}:3000"
+    depends_on:
+      - gateway
+      - blog-server
 
   web:
     image: nginx:1.28-alpine

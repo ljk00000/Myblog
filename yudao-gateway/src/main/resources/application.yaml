@@ -37,6 +37,15 @@ spring:
                 - Path=/app-api/system/**
               filters:
                   - RewritePath=/app-api/system/v3/api-docs, /v3/api-docs
+            ## blog-server 服务
+            - id: blog-admin-api
+              uri: grayLb://blog-server
+              predicates:
+                - Path=/admin-api/blog/**
+            - id: blog-app-api
+              uri: grayLb://blog-server
+              predicates:
+                - Path=/app-api/blog/**
             ## infra-server 服务
             - id: infra-admin-api # 路由的编号
               uri: grayLb://infra-server

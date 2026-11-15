@@ -1,0 +1,24 @@
+{
+  "name": "myblog-web",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": { "node": "^24.11.0", "pnpm": "10.x" },
+  "scripts": {
+    "dev": "nuxt dev --host 127.0.0.1",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "start": "node .output/server/index.mjs",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "4.5.0",
+    "vue": "3.5.45"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.0",
+    "typescript": "5.9.3",
+    "vue-tsc": "3.3.14"
+  }
+}

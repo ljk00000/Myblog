@@ -13,6 +13,7 @@
         <module>yudao-framework</module>
         <module>yudao-module-system</module>
         <module>yudao-module-infra</module>
+        <module>yudao-module-blog</module>
     </modules>
 
     <name>${project.artifactId}</name>

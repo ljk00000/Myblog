@@ -2,7 +2,7 @@
 
 目标：用 Docker Compose V2 快速搭建一套可登录的体验环境，了解各组件之间的依赖关系。
 
-包含：`gateway` 网关、`system-server`、`infra-server`、前端 Nginx、MySQL、Redis，以及可选的内置 Nacos。仅用于入门体验与测试，不是生产高可用方案；其他业务服务、SkyWalking、XXL-Job 等不在本编排中。
+包含：`gateway`、`system-server`、`infra-server`、`blog-server`、Nuxt 公开前台 `blog-web`、管理端 Nginx、MySQL、Redis，以及可选的内置 Nacos。用于本机体验与测试；SkyWalking、XXL-Job 和高可用编排不在本文件中。
 
 ## 文件列表
 
@@ -24,12 +24,14 @@ script/docker-compose
 | `mysql` | `mysql:8.4` | 首次启动导入 `sql/mysql/ruoyi-vue-pro.sql`，数据卷 `yudao-cloud_mysql-data` |
 | `redis` | `redis:7.4-alpine` | 开启密码与 AOF，数据卷 `yudao-cloud_redis-data` |
 | `nacos` | `nacos/nacos-server:v3.0.3` | 可选（profile `nacos`），单机 + 嵌入式存储，数据卷 `yudao-cloud_nacos-data` |
-| `gateway` | `yudao-gateway:${IMAGE_TAG}` | 由 `yudao-gateway/Dockerfile` 构建，端口 48080，Nacos 服务名 `gateway-server` |
+| `gateway` | `yudao-gateway:${GATEWAY_IMAGE_TAG:-${IMAGE_TAG}}` | 网关端口 48080，Nacos 服务名 `gateway-server` |
 | `system-server` | `yudao-module-system-server:${IMAGE_TAG}` | 由模块 Dockerfile 构建，端口 48081，Nacos 服务名 `system-server` |
 | `infra-server` | `yudao-module-infra-server:${IMAGE_TAG}` | 由模块 Dockerfile 构建，端口 48082，Nacos 服务名 `infra-server` |
+| `blog-server` | `yudao-module-blog:${BLOG_IMAGE_TAG}` | 博客内容，端口 48083，Nacos 服务名 `blog-server`，不映射宿主机端口 |
+| `blog-web` | `myblog-web:${BLOG_IMAGE_TAG}` | Nuxt SSR，回环绑定 `${BLOG_WEB_PORT}`（默认 3000），Node 24 多阶段构建 |
 | `web` | `nginx:1.28-alpine` | 对宿主机开放 `${WEB_PORT}`（默认 8080） |
 
-请求链路：浏览器 → `web`（Nginx）→ `gateway` → 通过 Nacos 发现 `system-server`、`infra-server`。`gateway` 只依赖 Nacos，不连接 MySQL、Redis。
+后台请求链路：浏览器 → `web`（Nginx）→ `gateway` → system、infra 或 blog。公开请求链路：浏览器 → `blog-web`（Nuxt SSR / 受限 GET 代理）→ `gateway` → `blog-server`。服务由 Nacos 发现；`gateway` 不连接 MySQL、Redis。
 
 容器之间通过服务名访问，服务注册到 Nacos 的是容器在 Compose 网络中的 IP，网关可以直接访问。基础编排不向宿主机映射 MySQL、Redis、Nacos 或网关端口；本仓库的 `docker-compose.override.yml` 会自动叠加本机回环地址上的网关 48080 和 Nacos 控制台 18080，供本地浏览器调试。其他环境应按需调整该覆盖文件。
 
@@ -45,10 +47,10 @@ script/docker-compose
 在**源码根目录**执行：
 
 ```shell
-mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server -am -Dmaven.test.skip=true
+mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server,yudao-module-blog -am -Dmaven.test.skip=true
 ```
 
-产物为 `yudao-gateway/target/yudao-gateway.jar`、`yudao-module-system/yudao-module-system-server/target/yudao-module-system-server.jar`、`yudao-module-infra/yudao-module-infra-server/target/yudao-module-infra-server.jar`，`docker compose build` 时由各模块的 Dockerfile 复制进镜像。
+产物为各服务 `target` 下对应名称的 JAR，包括 `yudao-module-blog/target/yudao-module-blog.jar`，由模块 Dockerfile 复制进镜像。博客单测命令及迁移说明见 `script/blog/README.md`。
 
 ## 2. 准备前端产物
 
@@ -71,7 +73,9 @@ robocopy frontend/dist-prod script/docker-compose/web/dist /MIR
 # robocopy 返回码 0–7 表示复制成功，8 及以上表示失败。
 ```
 
-首次初始化数据库后还需按 `script/blog-admin/README.md` 应用博客导航迁移并刷新精确缓存，再退出重新登录。
+首次初始化数据库后按顺序执行 `script/blog-admin/menu.apply.sql`、`script/blog/schema.sql`、`script/blog/menu.apply.sql`，再正常退出并登录。已有数据库不要重新导入上游初始化 SQL。具体恢复点、缓存与菜单回滚见 `script/blog/README.md`。
+
+Nuxt 源码位于 `blog-web`，可在该目录执行 `pnpm install --frozen-lockfile`、`pnpm typecheck`、`pnpm build`。Compose 构建 `blog-web` 时会在容器内执行这三项检查，无需复制宿主机 `.output` 或 `node_modules`。
 
 ## 3. 配置环境变量
 
@@ -86,12 +90,16 @@ cp .env.example .env
 | --- | --- | --- |
 | `WEB_PORT` | `8080` | 前端访问端口 |
 | `IMAGE_TAG` | `local` | 后端镜像 tag |
+| `GATEWAY_IMAGE_TAG` | 回退到 `IMAGE_TAG` | 单独更新网关时使用 |
+| `BLOG_IMAGE_TAG` | `local` | blog-server、blog-web 镜像 tag |
+| `BLOG_WEB_PORT` | `3000` | Nuxt 前台回环访问端口 |
+| `BLOG_SITE_TENANT_ID` | `1` | 服务器固定的公开站点租户 |
 | `MYSQL_DATABASE` | `ruoyi-vue-pro` | 数据库名 |
 | `MYSQL_ROOT_PASSWORD` | 示例值 | MySQL root 密码，仅供初始化与运维使用 |
 | `MYSQL_USER` / `MYSQL_PASSWORD` | `yudao` / 示例值 | 应用使用的账号，只拥有 `MYSQL_DATABASE` 库权限 |
 | `REDIS_PASSWORD` | 示例值 | Redis 密码 |
 | `SPRING_PROFILES_ACTIVE` | `dev` | 后端 profile，同时决定 Nacos Data ID 后缀 |
-| `JAVA_OPTS` | `-Xms512m -Xmx512m` | JVM 参数，三个 Java 服务共用 |
+| `JAVA_OPTS` | `-Xms512m -Xmx512m` | 四个 Java 服务共用的 JVM 参数 |
 | `YUDAO_CAPTCHA_ENABLE` | `true` | 是否开启登录验证码 |
 | `COMPOSE_PROFILES` | `nacos` | 为 `nacos` 时启动内置 Nacos；复用已部署的 Nacos 时清空 |
 | `NACOS_SERVER_ADDR` | `nacos:8848` | Nacos 地址，必须是**容器内**可访问的地址 |
@@ -106,6 +114,8 @@ cp .env.example .env
 - Nacos 地址、账号、命名空间、分组：`spring.cloud.nacos.*`
 - `xxl.job.enabled=false`：本编排不提供 XXL-Job 调度中心
 - `yudao.demo=false`：`application-dev.yaml` 默认开启的演示模式会禁止写操作
+
+`blog-web` 的私有 `NUXT_API_BASE` 固定为 `http://gateway:48080/app-api/blog`，浏览器只使用 Nuxt 的 GET 白名单代理。发布到域名时，在后台“站点设置”更新规范站点 URL，并配置 HTTPS 与读者可访问的文件存储域名。修改域名不会自动修改以前写入正文的绝对文件地址。
 
 ## 4. Nacos 说明
 
@@ -127,19 +137,20 @@ cp .env.example .env
 
 ```shell
 # 检查配置（变量缺失会直接报错）
-docker compose config
+docker compose config --quiet
 
 # 构建后端镜像并启动
 docker compose up -d --build
 
 # 查看状态与日志
 docker compose ps
-docker compose logs -f gateway system-server infra-server
+docker compose logs -f gateway system-server infra-server blog-server blog-web
 ```
 
-首次启动时 MySQL 需要导入 SQL，`system-server`、`infra-server` 会等到 MySQL、Redis（以及内置 Nacos）健康检查通过后再启动。三个服务日志分别出现 `Started GatewayServerApplication`、`Started SystemServerApplication`、`Started InfraServerApplication`，并在 Nacos 中注册后访问：
+首次启动时 MySQL 需要导入上游 SQL，system、infra、blog 等待数据库、Redis 和内置 Nacos 就绪。按博客说明应用增量表结构与菜单。四个 Java 服务日志应分别出现对应 `Started ...Application`，Nuxt 日志出现 `Listening`，并确认公开 API 成功后访问：
 
-- 管理后台：http://localhost:8080 （`WEB_PORT` 修改后对应调整）
+- 公开前台：http://127.0.0.1:3000 （对应 `BLOG_WEB_PORT`）
+- 管理后台：http://127.0.0.1:8080 （对应 `WEB_PORT`）
 
 服务刚启动时网关可能短暂返回 503（尚未从 Nacos 拉取到实例），稍等后刷新即可。
 
@@ -148,9 +159,9 @@ docker compose logs -f gateway system-server infra-server
 ```shell
 # 后端：回到源码根目录重新打包，再回到本目录重建、重启
 cd ../..
-mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server -am -Dmaven.test.skip=true
+mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server,yudao-module-blog -am -Dmaven.test.skip=true
 cd script/docker-compose
-docker compose up -d --build gateway system-server infra-server
+docker compose up -d --build gateway system-server infra-server blog-server blog-web
 
 # 前端：清空 web/dist/ 内的文件（保留 dist 目录本身）后复制新产物，再重启 web；修改 nginx/default.conf 后同样执行
 rm -rf web/dist/*
@@ -158,7 +169,7 @@ cp -R /path/to/前端打包产物目录/. web/dist/
 docker compose restart web
 ```
 
-只更新某个服务时，打包与 `docker compose up -d --build` 只写对应模块即可。如需回滚，可在打包前修改 `.env` 的 `IMAGE_TAG`，保留旧 tag 的镜像。
+只更新某个服务时，只打包与重建对应模块。`GATEWAY_IMAGE_TAG` 可单独指定网关标签，`BLOG_IMAGE_TAG` 指定两个博客镜像标签；system/infra 仍使用 `IMAGE_TAG`。更新前保留旧 tag 与后台静态文件恢复点，回滚需使用彼此匹配的应用、路由和数据库版本。
 
 ## 7. 停止与数据
 

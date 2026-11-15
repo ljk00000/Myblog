@@ -1,0 +1,99 @@
+spring:
+  application:
+    name: blog-server
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    import:
+      - optional:classpath:application-${spring.profiles.active}.yaml
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.yaml
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      username: ${NACOS_USERNAME:}
+      password: ${NACOS_PASSWORD:}
+      discovery:
+        namespace: ${NACOS_NAMESPACE:public}
+        group: DEFAULT_GROUP
+        metadata:
+          version: 1.0.0
+      config:
+        namespace: ${NACOS_NAMESPACE:public}
+        group: DEFAULT_GROUP
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: ${BLOG_DB_URL:jdbc:mysql://127.0.0.1:13306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+          username: ${BLOG_DB_USERNAME:yudao}
+          password: ${BLOG_DB_PASSWORD:}
+      druid:
+        initial-size: 2
+        min-idle: 2
+        max-active: 10
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: 1
+      password: ${REDIS_PASSWORD:}
+      repositories:
+        enabled: false
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+server:
+  port: 48083
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: AUTO
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: false
+  type-aliases-package: cn.iocoder.yudao.module.blog.dal.dataobject
+mybatis-plus-join:
+  banner: false
+easy-trans:
+  is-enable-global: false
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+knife4j:
+  enable: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+yudao:
+  info:
+    version: 1.0.0
+    base-package: cn.iocoder.yudao.module.blog
+  web:
+    admin-ui:
+      url: http://127.0.0.1:8080
+  security:
+    mock-enable: false
+  tenant:
+    enable: true
+  xss:
+    enable: false
+  demo: false
+blog:
+  site-tenant-id: ${BLOG_SITE_TENANT_ID:1}
+logging:
+  file:
+    name: ${user.home}/logs/${spring.application.name}.log
