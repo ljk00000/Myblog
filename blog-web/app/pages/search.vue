@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import type { ArticleSummary, PageResult, ResourceSummary } from '#shared/types/blog'
 const route = useRoute()
+const request = useBlogRequest()
 const q = computed(() => textQuery(route.query.q))
 const input = ref(q.value)
 const articlePage = computed(() => positiveQuery(route.query.articlePage))
 const resourcePage = computed(() => positiveQuery(route.query.resourcePage))
 watch(q, value => { input.value = value })
 const [articles, resources] = await Promise.all([
-  useAsyncData(`search-articles`, () => q.value ? $fetch<PageResult<ArticleSummary>>('/api/blog/article/page', { query: { keyword: q.value, pageNo: articlePage.value, pageSize: 6 } }) : Promise.resolve({ list: [] as ArticleSummary[], total: 0 }), { watch: [q, articlePage] }),
-  useAsyncData(`search-resources`, () => q.value ? $fetch<PageResult<ResourceSummary>>('/api/blog/resource/page', { query: { keyword: q.value, pageNo: resourcePage.value, pageSize: 6 } }) : Promise.resolve({ list: [] as ResourceSummary[], total: 0 }), { watch: [q, resourcePage] }),
+  useAsyncData(computed(() => `search-articles:${q.value}:${articlePage.value}`), () => q.value ? request<PageResult<ArticleSummary>>('/api/blog/article/page', { query: { keyword: q.value, pageNo: articlePage.value, pageSize: 6 } }) : Promise.resolve({ list: [] as ArticleSummary[], total: 0 })),
+  useAsyncData(computed(() => `search-resources:${q.value}:${resourcePage.value}`), () => q.value ? request<PageResult<ResourceSummary>>('/api/blog/resource/page', { query: { keyword: q.value, pageNo: resourcePage.value, pageSize: 6 } }) : Promise.resolve({ list: [] as ResourceSummary[], total: 0 })),
 ])
 const { data: articleData, error: articleError, status: articleStatus, refresh: refreshArticles } = articles
 const { data: resourceData, error: resourceError, status: resourceStatus, refresh: refreshResources } = resources

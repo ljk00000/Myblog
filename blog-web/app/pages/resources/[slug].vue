@@ -3,7 +3,7 @@ import type { Resource } from '#shared/types/blog'
 import { formatDate, isoDate, plainText, safeUrl } from '#shared/utils/format'
 definePageMeta({ key: route => route.path, validate: route => typeof route.params.slug === 'string' && /^[a-z0-9-]{1,120}$/.test(route.params.slug) })
 const route = useRoute()
-const { data: resource, error } = await useFetch<Resource>('/api/blog/resource/get', { query: { slug: route.params.slug } })
+const { data: resource, error } = await useFetch<Resource>('/api/blog/resource/get', { $fetch: useBlogRequest(), query: { slug: route.params.slug } })
 if (error.value || !resource.value) {
   const statusCode = error.value?.statusCode || 404
   throw createError({ statusCode, fatal: true, message: statusCode === 404 ? '这项资源不存在或尚未公开' : '资源暂时无法加载，请稍后重试' })

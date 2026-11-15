@@ -7,8 +7,8 @@ const titleLines = computed(() => {
   return split > 0 && split < title.length - 1 ? [title.slice(0, split + 1), title.slice(split + 1)] : [title]
 })
 const [{ data: articles, error: articleError, status: articleStatus, refresh: refreshArticles }, { data: resources, error: resourceError, status: resourceStatus, refresh: refreshResources }] = await Promise.all([
-  useFetch<PageResult<ArticleSummary>>('/api/blog/article/page', { query: { pageNo: 1, pageSize: 4 } }),
-  useFetch<PageResult<ResourceSummary>>('/api/blog/resource/page', { query: { pageNo: 1, pageSize: 3, featured: true } }),
+  useFetch<PageResult<ArticleSummary>>('/api/blog/article/page', { $fetch: useBlogRequest(), query: { pageNo: 1, pageSize: 4 } }),
+  useFetch<PageResult<ResourceSummary>>('/api/blog/resource/page', { $fetch: useBlogRequest(), query: { pageNo: 1, pageSize: 3, featured: true } }),
 ])
 useBlogSeo(() => ({ title: '首页', description: site.value?.description || site.value?.subtitle || '阅读最新文章，发现精选资源。' }))
 </script>

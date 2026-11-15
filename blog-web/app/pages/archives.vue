@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ArchiveMonth } from '#shared/types/blog'
 import { formatMonth } from '#shared/utils/format'
-const { data, error, status, refresh } = await useFetch<ArchiveMonth[]>('/api/blog/article/archives')
+const { data, error, status, refresh } = await useFetch<ArchiveMonth[]>('/api/blog/article/archives', { $fetch: useBlogRequest() })
 const years = computed(() => {
   const groups = new Map<string, ArchiveMonth[]>()
   for (const item of data.value || []) {

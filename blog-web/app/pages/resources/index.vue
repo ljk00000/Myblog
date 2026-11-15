@@ -4,8 +4,8 @@ const route = useRoute()
 const page = computed(() => positiveQuery(route.query.page))
 const query = computed(() => ({ pageNo: page.value, pageSize: 12, categoryId: optionalId(route.query.categoryId), keyword: textQuery(route.query.keyword) || undefined, type: ['link', 'file'].includes(textQuery(route.query.type)) ? textQuery(route.query.type) : undefined }))
 const [{ data, error, status, refresh }, { data: categories, error: categoryError, refresh: refreshCategories }] = await Promise.all([
-  useFetch<PageResult<ResourceSummary>>('/api/blog/resource/page', { query }),
-  useFetch<Category[]>('/api/blog/category/list', { query: { type: 'resource' } }),
+  useFetch<PageResult<ResourceSummary>>('/api/blog/resource/page', { $fetch: useBlogRequest(), query }),
+  useFetch<Category[]>('/api/blog/category/list', { $fetch: useBlogRequest(), query: { type: 'resource' } }),
 ])
 useBlogSeo(() => ({ title: '资源', description: '浏览公开的链接与文件资源，按分类、类型或关键词查找。' }))
 </script>

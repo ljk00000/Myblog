@@ -3,7 +3,7 @@ import type { Article } from '#shared/types/blog'
 import { formatDate, isoDate, plainText, safeUrl } from '#shared/utils/format'
 definePageMeta({ key: route => route.path, validate: route => typeof route.params.slug === 'string' && /^[a-z0-9-]{1,120}$/.test(route.params.slug) })
 const route = useRoute()
-const { data: article, error } = await useFetch<Article>('/api/blog/article/get', { query: { slug: route.params.slug } })
+const { data: article, error } = await useFetch<Article>('/api/blog/article/get', { $fetch: useBlogRequest(), query: { slug: route.params.slug } })
 if (error.value || !article.value) {
   const statusCode = error.value?.statusCode || 404
   throw createError({ statusCode, fatal: true, message: statusCode === 404 ? '这篇文章不存在或尚未公开' : '文章暂时无法加载，请稍后重试' })

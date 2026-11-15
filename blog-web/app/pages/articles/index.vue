@@ -6,9 +6,9 @@ const page = computed(() => positiveQuery(route.query.page))
 const month = computed(() => /^\d{4}-(0[1-9]|1[0-2])$/.test(textQuery(route.query.yearMonth)) ? textQuery(route.query.yearMonth) : undefined)
 const query = computed(() => ({ pageNo: page.value, pageSize: 10, categoryId: optionalId(route.query.categoryId), tagId: optionalId(route.query.tagId), keyword: textQuery(route.query.keyword) || undefined, yearMonth: month.value }))
 const [{ data, error, status, refresh }, { data: categories, error: categoryError, refresh: refreshCategories }, { data: tags, error: tagError, refresh: refreshTags }] = await Promise.all([
-  useFetch<PageResult<ArticleSummary>>('/api/blog/article/page', { query }),
-  useFetch<Category[]>('/api/blog/category/list', { query: { type: 'article' } }),
-  useFetch<Tag[]>('/api/blog/tag/list'),
+  useFetch<PageResult<ArticleSummary>>('/api/blog/article/page', { $fetch: useBlogRequest(), query }),
+  useFetch<Category[]>('/api/blog/category/list', { $fetch: useBlogRequest(), query: { type: 'article' } }),
+  useFetch<Tag[]>('/api/blog/tag/list', { $fetch: useBlogRequest() }),
 ])
 function retryFilters() { return Promise.all([refreshCategories(), refreshTags()]) }
 const title = computed(() => month.value ? `${formatMonth(month.value)}的文章` : '文章')

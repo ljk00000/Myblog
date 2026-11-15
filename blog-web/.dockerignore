@@ -10,3 +10,8 @@ node_modules
 preview.html
 playwright-report
 test-results
+.pages-output
+public/pages-snapshot.json
+public/robots.txt
+public/sitemap.xml
+public/.nojekyll

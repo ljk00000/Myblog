@@ -10,3 +10,8 @@ test-results/
 .env
 .env.*
 !.env.example
+.pages-output/
+public/pages-snapshot.json
+public/robots.txt
+public/sitemap.xml
+public/.nojekyll
