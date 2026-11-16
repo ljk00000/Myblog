@@ -10,7 +10,7 @@ export default defineEventHandler(async event => {
   const base = safeUrl(site.siteUrl, false)
   if (!base) throw createError({ statusCode: 503, message: '站点规范网址尚未配置' })
   const origin = base.replace(/\/$/, '')
-  const urls = new Map<string, string | undefined>(['/', '/articles', '/resources', '/archives', '/about'].map(path => [path, undefined]))
+  const urls = new Map<string, string | undefined>(['/', '/articles', '/resources', '/archives', '/tech-stack', '/about'].map(path => [path, undefined]))
   for (const entry of entries) {
     // Only published detail URLs supplied by Java; never arbitrary external URLs.
     if (/^\/(articles|resources)\/[a-z0-9-]{1,120}$/.test(entry.path)) urls.set(entry.path, isoDate(entry.updateTime))

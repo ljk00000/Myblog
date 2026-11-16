@@ -4,7 +4,7 @@ const { data: site, error, refresh, status } = await useSite()
 const route = useRoute()
 const menuOpen = ref(false)
 const menuButton = ref<HTMLButtonElement>()
-const nav = [ ['/', '首页'], ['/articles', '文章'], ['/resources', '资源'], ['/archives', '归档'], ['/about', '关于'] ]
+const nav = [ ['/', '首页'], ['/articles', '文章'], ['/resources', '资源'], ['/archives', '归档'], ['/tech-stack', '技术栈'], ['/about', '关于'] ]
 const current = (path: string) => path === '/' ? route.path === '/' : route.path.startsWith(path)
 watch(() => route.fullPath, () => { menuOpen.value = false; void refresh() })
 function closeMenu() { if (menuOpen.value) { menuOpen.value = false; menuButton.value?.focus() } }

@@ -81,7 +81,7 @@ try {
     if ('url' in item) item.url = urlForPages(item.url)
   }
   const snapshot = { exportedAt: new Date().toISOString(), site, categories, tags, archives, sitemap, articles, resources }
-  const paths = ['/', '/articles', '/resources', '/archives', '/about', ...articles.map(item => `/articles/${item.slug}`), ...resources.map(item => `/resources/${item.slug}`)]
+  const paths = ['/', '/articles', '/resources', '/archives', '/tech-stack', '/about', ...articles.map(item => `/articles/${item.slug}`), ...resources.map(item => `/resources/${item.slug}`)]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(route => `<url><loc>${escapeXml(canonicalSite + (route === '/' ? '/' : route))}</loc></url>`).join('')}</urlset>\n`
   const robots = `User-agent: *\nAllow: ${basePath}\nDisallow: ${basePath}search\nDisallow: ${basePath}api/\nSitemap: ${canonicalSite}/sitemap.xml\n`
   for (const [index, value] of [JSON.stringify(snapshot), robots, xml, ''].entries()) {

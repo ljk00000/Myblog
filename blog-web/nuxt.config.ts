@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: pagesExport ? 'static' : 'node-server',
-    ...(snapshot ? { prerender: { crawlLinks: false, failOnError: true, routes: ['/', '/articles', '/resources', '/archives', '/about', '/search', ...snapshot.articles.map(item => `/articles/${item.slug}`), ...snapshot.resources.map(item => `/resources/${item.slug}`)] } } : {}),
+    ...(snapshot ? { prerender: { crawlLinks: false, failOnError: true, routes: ['/', '/articles', '/resources', '/archives', '/tech-stack', '/about', '/search', ...snapshot.articles.map(item => `/articles/${item.slug}`), ...snapshot.resources.map(item => `/resources/${item.slug}`)] } } : {}),
   },
   typescript: { strict: true },
 })

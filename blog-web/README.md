@@ -36,9 +36,10 @@ pnpm start
 | `/resources` | 分类、链接/文件类型、关键词筛选，分页 |
 | `/resources/[slug]` | SSR 说明、目录、有效资源链接 |
 | `/archives` | 月度归档，链接到对应月份文章 |
+| `/tech-stack` | 前后端技术清单、完整应用与 Pages 架构图，支持桌面和手机 |
 | `/about` | Java 渲染的关于正文及真实站点资料 |
 | `/search?q=关键词` | 并行搜索文章和资源，两个结果区独立分页，`noindex` |
-| `/sitemap.xml` | 五个静态页面 + Java 返回的已公开详情，兼容字符串/数组日期 |
+| `/sitemap.xml` | 六个静态页面 + Java 返回的已公开详情，兼容字符串/数组日期 |
 | `/robots.txt` | 当前站点 sitemap 地址；禁止抓取搜索与代理接口 |
 
 文章列表 query：`categoryId`、`tagId`、`keyword`、`yearMonth`、`page`。资源列表 query：`categoryId`、`type`、`keyword`、`page`。搜索结果分页使用 `articlePage` / `resourcePage`。无匹配结果和未发布内容有明确空状态，后端错误有重试入口，缺失详情和未知页面返回真实 HTTP 404。
