@@ -14,27 +14,29 @@ const groups = [
     { name: 'TypeScript', version: '6.0.3', purpose: '管理端代码与接口类型' },
   ] },
   { title: 'Java 服务', icon: 'service', tone: 'blue', items: [
-    { name: 'JDK', version: '25', purpose: 'Java 服务的编译与运行环境' },
+    { name: 'JDK', version: '25.0.2', purpose: '本地 Java 编译环境，项目编译目标为 Java 25' },
+    { name: 'Eclipse Temurin', version: '25.0.5', purpose: 'Java 服务容器使用的运行时' },
     { name: 'Spring Boot', version: '4.1.2', purpose: '服务启动、配置和 HTTP 接口' },
     { name: 'Spring Cloud', version: '2025.1.2', purpose: '网关路由与微服务集成' },
+    { name: 'Spring Cloud Gateway', version: '5.0.2', purpose: '公开内容和管理接口的统一网关' },
     { name: 'Spring Cloud Alibaba', version: '2025.1.0.0', purpose: '集成 Nacos 服务发现与配置' },
   ] },
   { title: '数据与服务治理', icon: 'database', tone: 'amber', items: [
-    { name: 'MySQL', version: '8.4', purpose: '文章、资源、站点设置与系统数据' },
+    { name: 'MySQL', version: '8.4.13', purpose: '文章、资源、站点设置与系统数据' },
     { name: 'MyBatis-Plus', version: '3.5.17', purpose: 'Java 数据访问与分页查询' },
-    { name: 'Redis', version: '7.4', purpose: '登录状态与系统缓存' },
+    { name: 'Redis', version: '7.4.12', purpose: '登录状态与系统缓存' },
     { name: 'Nacos', version: '3.0.3', purpose: '服务注册、发现与配置管理' },
   ] },
   { title: '内容处理', icon: 'markdown', tone: 'blue', items: [
-    { name: 'Markdown', version: '', purpose: '文章、资源说明与关于页的编辑格式' },
-    { name: 'CommonMark', version: '0.27.1', purpose: '在 Java 服务中将 Markdown 转为 HTML' },
+    { name: 'Markdown', version: '规范 0.31.2', purpose: '采用 CommonMark 规范，编辑文章、资源说明与关于页' },
+    { name: 'CommonMark Java', version: '0.27.1', purpose: '在 Java 服务中将 Markdown 转为 HTML' },
     { name: 'Jsoup', version: '1.23.2', purpose: '清理 HTML，保留允许的内容与链接' },
   ] },
   { title: '构建与发布', icon: 'deploy', tone: 'purple', items: [
-    { name: 'Docker Compose', version: '', purpose: '编排前台、Java 服务与基础设施' },
-    { name: 'Nginx', version: '1.28', purpose: '托管管理后台，转发管理接口' },
-    { name: 'GitHub Actions', version: '', purpose: '源码构建检查与 Pages 发布' },
-    { name: 'GitHub Pages', version: '', purpose: '托管当前公网站点的静态网页' },
+    { name: 'Docker Compose', version: '5.7.0', purpose: '编排前台、Java 服务与基础设施' },
+    { name: 'Nginx', version: '1.28.3', purpose: '托管管理后台，转发管理接口' },
+    { name: 'GitHub Actions', version: '无公开版本号', purpose: '托管工作流服务；源码检查使用 checkout v7、setup-java v6' },
+    { name: 'GitHub Pages', version: '无公开版本号', purpose: '托管静态网页，由 GitHub 持续维护的平台服务' },
   ] },
 ] as const
 useBlogSeo(() => ({ title: '技术栈', description: '这个博客使用的前台、管理后台、Java 微服务、数据库与部署技术，以及完整应用和 GitHub Pages 的架构图。' }))
@@ -60,18 +62,18 @@ useBlogSeo(() => ({ title: '技术栈', description: '这个博客使用的前�
           <div class="node-grid node-grid-two">
             <div class="stack-node tone-green">
               <div class="node-heading"><span class="node-icon"><StackGlyph name="web" /></span><span class="node-type">公开前台</span></div>
-              <h3>Nuxt + Vue</h3><p>文章阅读、搜索、筛选与 SEO</p><span class="node-tag">SSR / 静态导出</span>
+              <h3>Nuxt + Vue</h3><p>文章阅读、搜索、筛选与 SEO</p><span class="node-tag">Nuxt 4.5.0 · Vue 3.5.45<br>SSR / 静态导出</span>
             </div>
             <div class="stack-node tone-green">
               <div class="node-heading"><span class="node-icon"><StackGlyph name="admin" /></span><span class="node-type">管理后台</span></div>
-              <h3>Vue + Element Plus</h3><p>内容编辑、文件上传与站点设置</p><span class="node-tag">Vite 构建 · Nginx 托管</span>
+              <h3>Vue + Element Plus</h3><p>内容编辑、文件上传与站点设置</p><span class="node-tag">Vue 3.5.34 · Element Plus 2.13.7<br>Vite 8.1.4 · Nginx 1.28.3</span>
             </div>
           </div>
           <div class="flow-connector"><i aria-hidden="true" /><span>公开内容请求 / 后台管理请求</span></div>
           <div class="backend-group">
-            <div class="backend-heading"><span class="layer-caption"><span class="legend-dot tone-blue" />Java 微服务</span><span class="backend-runtime">JDK 25 · Spring Boot 4</span></div>
+            <div class="backend-heading"><span class="layer-caption"><span class="legend-dot tone-blue" />Java 微服务</span><span class="backend-runtime">Java 25.0.5 · Spring Boot 4.1.2</span></div>
             <div class="stack-node gateway-node tone-blue">
-              <span class="node-icon"><StackGlyph name="gateway" /></span><div><h3>Spring Cloud Gateway</h3><p>统一 API 入口，按路径路由到对应服务</p></div>
+              <span class="node-icon"><StackGlyph name="gateway" /></span><div><h3>Spring Cloud Gateway</h3><p>统一 API 入口，按路径路由到对应服务</p><span class="node-tag">5.0.2</span></div>
             </div>
             <div class="service-branches" aria-hidden="true"><span /><span /><span /></div>
             <div class="node-grid service-grid">
@@ -83,25 +85,25 @@ useBlogSeo(() => ({ title: '技术栈', description: '这个博客使用的前�
           </div>
           <div class="flow-connector"><i aria-hidden="true" /><span>数据读写 / 系统缓存</span></div>
           <div class="node-grid node-grid-two data-grid">
-            <div class="stack-node data-node tone-amber"><span class="node-icon"><StackGlyph name="database" /></span><div><h3>MySQL <span>8.4</span></h3><p>内容与系统数据</p></div></div>
-            <div class="stack-node data-node tone-amber"><span class="node-icon"><StackGlyph name="cache" /></span><div><h3>Redis <span>7.4</span></h3><p>登录状态与系统缓存</p></div></div>
+            <div class="stack-node data-node tone-amber"><span class="node-icon"><StackGlyph name="database" /></span><div><h3>MySQL <span>8.4.13</span></h3><p>内容与系统数据</p></div></div>
+            <div class="stack-node data-node tone-amber"><span class="node-icon"><StackGlyph name="cache" /></span><div><h3>Redis <span>7.4.12</span></h3><p>登录状态与系统缓存</p></div></div>
           </div>
         </div>
-        <figcaption id="application-caption">完整应用通过 Docker Compose 部署。网关、博客、系统和基础服务分别运行。</figcaption>
+        <figcaption id="application-caption">完整应用通过 Docker Compose 5.7.0 部署。网关、博客、系统和基础服务分别运行。</figcaption>
       </figure>
 
       <figure v-show="view === 'pages'" id="pages-diagram" class="architecture-figure" aria-labelledby="pages-caption">
         <div class="diagram-canvas pages-canvas">
           <div class="publish-stage">
             <div class="layer-caption"><span class="legend-dot tone-blue" />构建阶段</div>
-            <div class="publish-step tone-blue"><span class="node-icon"><StackGlyph name="service" /></span><div><h3>Java 公开接口</h3><p>提供已公开的文章、资源和站点设置</p></div><span class="step-label">内容来源</span></div>
+            <div class="publish-step tone-blue"><span class="node-icon"><StackGlyph name="service" /></span><div><h3>Java 公开接口</h3><p>Spring Boot 4.1.2，提供已公开的文章、资源和站点设置</p></div><span class="step-label">内容来源</span></div>
             <div class="flow-connector"><i aria-hidden="true" /><span>匿名读取公开内容</span></div>
-            <div class="publish-step tone-green"><span class="node-icon"><StackGlyph name="export" /></span><div><h3>Nuxt 静态导出</h3><p>预渲染 HTML，生成 CSS、JavaScript 和公开内容快照</p></div><span class="step-label">本地构建</span></div>
+            <div class="publish-step tone-green"><span class="node-icon"><StackGlyph name="export" /></span><div><h3>Nuxt 4.5.0 静态导出</h3><p>预渲染 HTML，生成 CSS、JavaScript 和公开内容快照</p></div><span class="step-label">本地构建</span></div>
           </div>
           <div class="flow-connector publish-boundary"><i aria-hidden="true" /><span>提交静态产物，由 GitHub Actions 发布</span></div>
           <div class="publish-stage">
             <div class="layer-caption"><span class="legend-dot tone-purple" />访问阶段</div>
-            <div class="publish-step tone-purple"><span class="node-icon"><StackGlyph name="pages" /></span><div><h3>GitHub Pages</h3><p>通过 HTTPS 提供网页与静态资源</p></div><span class="step-label">公网托管</span></div>
+            <div class="publish-step tone-purple"><span class="node-icon"><StackGlyph name="pages" /></span><div><h3>GitHub Pages</h3><p>托管服务，无公开版本号；通过 HTTPS 提供网页与静态资源</p></div><span class="step-label">公网托管</span></div>
             <div class="flow-connector"><i aria-hidden="true" /><span>读取页面与同源 JSON 快照</span></div>
             <div class="publish-step tone-green"><span class="node-icon"><StackGlyph name="browser" /></span><div><h3>读者浏览器</h3><p>显示正文，并在本地完成搜索、筛选和分页</p></div><span class="step-label">阅读与交互</span></div>
           </div>
@@ -112,11 +114,11 @@ useBlogSeo(() => ({ title: '技术栈', description: '这个博客使用的前�
     </section>
 
     <section class="stack-inventory" aria-labelledby="inventory-title">
-      <div class="inventory-heading"><h2 id="inventory-title">使用的技术</h2><p>版本来自项目依赖与部署配置。</p></div>
+      <div class="inventory-heading"><h2 id="inventory-title">使用的技术</h2><p>版本来自项目依赖与当前部署；托管服务单独标注。</p></div>
       <div class="technology-grid">
         <section v-for="group in groups" :key="group.title" class="technology-group" :class="`tone-${group.tone}`">
           <h3><span class="group-icon"><StackGlyph :name="group.icon" /></span>{{ group.title }}</h3>
-          <dl><div v-for="item in group.items" :key="item.name" class="technology-row"><dt>{{ item.name }}<span v-if="item.version" class="tech-version">{{ item.version }}</span></dt><dd>{{ item.purpose }}</dd></div></dl>
+          <dl><div v-for="item in group.items" :key="item.name" class="technology-row"><dt>{{ item.name }}<span class="tech-version">{{ item.version }}</span></dt><dd>{{ item.purpose }}</dd></div></dl>
         </section>
       </div>
     </section>
@@ -198,7 +200,7 @@ useBlogSeo(() => ({ title: '技术栈', description: '这个博客使用的前�
 .group-icon svg { width: 18px; height: 18px; }
 .technology-group dl { margin: 0; }
 .technology-row { margin-top: 16px; }
-.technology-row dt { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 500; }
+.technology-row dt { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; font-size: 14px; font-weight: 500; }
 .tech-version { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--tone); flex-shrink: 0; }
 .technology-row dd { font-size: 12px; color: var(--muted); margin: 3px 0 0; line-height: 1.7; }
 @media (max-width: 720px) {
