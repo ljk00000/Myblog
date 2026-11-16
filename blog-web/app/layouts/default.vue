@@ -3,6 +3,8 @@ import { safeUrl, safeEmail } from '#shared/utils/format'
 const { data: site, error, refresh, status } = await useSite()
 const route = useRoute()
 const menuOpen = ref(false)
+const { configured: loginEnabled, user: owner, initialize: initializeLogin } = useOwnerAuth()
+onMounted(() => { void initializeLogin() })
 const menuButton = ref<HTMLButtonElement>()
 const nav = [ ['/', '首页'], ['/articles', '文章'], ['/resources', '资源'], ['/archives', '归档'], ['/tech-stack', '技术栈'], ['/about', '关于'] ]
 const current = (path: string) => path === '/' ? route.path === '/' : route.path.startsWith(path)
@@ -19,6 +21,7 @@ function closeMenu() { if (menuOpen.value) { menuOpen.value = false; menuButton.
         <div class="header-actions">
           <nav class="desktop-nav" aria-label="主导航"><NuxtLink v-for="[path, label] in nav" :key="path" :to="path!" :class="{ current: current(path!) }" :aria-current="current(path!) ? 'page' : undefined">{{ label }}</NuxtLink></nav>
           <NuxtLink to="/search" class="icon-button" :class="{ current: route.path === '/search' }" aria-label="搜索文章和资源"><AppIcon name="search" /></NuxtLink>
+          <NuxtLink v-if="loginEnabled" to="/login" class="owner-login-link" :class="{ current: route.path === '/login' }" :aria-label="owner ? '站长账号' : '站长登录'">{{ owner ? '站长' : '登录' }}</NuxtLink>
           <button ref="menuButton" class="icon-button mobile-toggle" type="button" :aria-expanded="menuOpen" aria-controls="mobile-nav" :aria-label="menuOpen ? '收起导航' : '展开导航'" @click="menuOpen = !menuOpen"><AppIcon :name="menuOpen ? 'close' : 'menu'" /></button>
         </div>
       </div>
@@ -38,3 +41,8 @@ function closeMenu() { if (menuOpen.value) { menuOpen.value = false; menuButton.
     </footer>
   </div>
 </template>
+
+<style scoped>
+.owner-login-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding-inline: 8px; font-size: 14px; color: var(--muted); border-radius: var(--radius); }
+.owner-login-link:hover, .owner-login-link.current { color: var(--ink); background: var(--surface); }
+</style>

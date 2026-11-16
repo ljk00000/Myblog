@@ -2,7 +2,7 @@
 
 基于芋道 Cloud `master-jdk25` 的个人博客，保留 JDK 25、Spring Boot 4、Spring Cloud Alibaba、Nacos 和微服务学习能力。
 
-首版提供 Nuxt 4 SSR 公开前台与 Vue 3 管理后台，支持文章、资源分享、分类、标签、Markdown 预览、文件上传和站点设置。访客无需登录；不包含评论、点赞、付费或访客账号。
+首版提供 Nuxt 4 SSR 公开前台与 Vue 3 管理后台，支持文章、资源分享、分类、标签、Markdown 预览、文件上传和站点设置。访客无需登录；可选的[站长登录](blog-web/AUTH.md)通过 Supabase Auth 接入，支持静态站点，不包含评论、点赞、付费或访客注册。
 
 ## 仓库与同步开发
 

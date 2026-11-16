@@ -83,14 +83,14 @@ try {
   const snapshot = { exportedAt: new Date().toISOString(), site, categories, tags, archives, sitemap, articles, resources }
   const paths = ['/', '/articles', '/resources', '/archives', '/tech-stack', '/about', ...articles.map(item => `/articles/${item.slug}`), ...resources.map(item => `/resources/${item.slug}`)]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(route => `<url><loc>${escapeXml(canonicalSite + (route === '/' ? '/' : route))}</loc></url>`).join('')}</urlset>\n`
-  const robots = `User-agent: *\nAllow: ${basePath}\nDisallow: ${basePath}search\nDisallow: ${basePath}api/\nSitemap: ${canonicalSite}/sitemap.xml\n`
+  const robots = `User-agent: *\nAllow: ${basePath}\nDisallow: ${basePath}search\nDisallow: ${basePath}login\nDisallow: ${basePath}api/\nSitemap: ${canonicalSite}/sitemap.xml\n`
   for (const [index, value] of [JSON.stringify(snapshot), robots, xml, ''].entries()) {
     await writeFile(generatedFiles[index], value, { flag: 'wx' })
     writtenFiles.push(generatedFiles[index])
   }
   await runNuxt('typecheck')
   await runNuxt('generate')
-  for (const route of [...paths, '/search']) {
+  for (const route of [...paths, '/search', '/login']) {
     const file = path.join(root, '.output/public', route.slice(1), 'index.html')
     const html = await readFile(file, 'utf8')
     if (html.includes('state-error') || html.includes('站点信息暂时无法加载')) throw new Error(`Prerendered content failed to load: ${route}`)
@@ -103,7 +103,7 @@ try {
   await access(path.join(output, '404.html'))
   const generatedSnapshot = JSON.parse(await readFile(path.join(output, 'pages-snapshot.json'), 'utf8'))
   if (generatedSnapshot.site.siteUrl !== canonicalSite) throw new Error('Generated snapshot URL mismatch')
-  console.log(JSON.stringify({ output, siteUrl: canonicalSite, articles: articles.length, resources: resources.length, staticPages: paths.length + 1 }))
+  console.log(JSON.stringify({ output, siteUrl: canonicalSite, articles: articles.length, resources: resources.length, staticPages: paths.length + 2 }))
 } finally {
   for (const file of writtenFiles) await rm(file, { force: true })
 }

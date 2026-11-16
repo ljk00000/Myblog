@@ -6,6 +6,7 @@ const groups = [
     { name: 'Vue', version: '3.5.45', purpose: '页面组件与交互' },
     { name: 'TypeScript', version: '5.9.3', purpose: '前台代码与接口类型检查' },
     { name: 'Node.js', version: '24.14.0', purpose: '前台构建与 SSR 运行环境' },
+    { name: 'Supabase Auth', version: 'SDK 2.119.0', purpose: '可选的托管站长登录；服务端无公开版本号，公开内容仍无需登录' },
   ] },
   { title: '管理后台', icon: 'admin', tone: 'green', items: [
     { name: 'Vue', version: '3.5.34', purpose: '内容编辑与管理页面' },
@@ -108,7 +109,7 @@ useBlogSeo(() => ({ title: '技术栈', description: '这个博客使用的前�
             <div class="publish-step tone-green"><span class="node-icon"><StackGlyph name="browser" /></span><div><h3>读者浏览器</h3><p>显示正文，并在本地完成搜索、筛选和分页</p></div><span class="step-label">阅读与交互</span></div>
           </div>
         </div>
-        <figcaption id="pages-caption">访问公网站点不连接本机 API。后台内容更新后，需要重新导出并发布。</figcaption>
+        <figcaption id="pages-caption">公开内容不连接本机 API。可选的站长登录由浏览器直连 Supabase Auth；后台内容更新后仍需重新导出并发布。</figcaption>
       </figure>
       <div class="architecture-note"><StackGlyph name="pages" /><p>当前公网站点使用 <strong>GitHub Pages</strong>。切换“当前公网”可查看它与完整应用的区别。</p></div>
     </section>
