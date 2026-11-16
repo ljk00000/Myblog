@@ -8,8 +8,8 @@ function update() {
   const article = document.querySelector<HTMLElement>('.detail-page')
   if (!article) return
   const top = article.getBoundingClientRect().top + window.scrollY
-  const length = article.offsetHeight - window.innerHeight + 128
-  progress.value = length > 0 ? Math.min(1, Math.max(0, (window.scrollY - top + 128) / length)) : 1
+  const length = article.offsetHeight - window.innerHeight + 96
+  progress.value = length > 0 ? Math.min(1, Math.max(0, (window.scrollY - top + 96) / length)) : 1
 }
 function schedule() { if (!frame) frame = requestAnimationFrame(update) }
 function configure() {

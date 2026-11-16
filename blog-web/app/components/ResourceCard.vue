@@ -4,7 +4,7 @@ import { safeUrl } from '#shared/utils/format'
 defineProps<{ resource: ResourceSummary }>()
 </script>
 <template>
-  <article class="resource-card spotlight">
+  <article class="resource-card">
     <img v-if="safeUrl(resource.coverUrl)" class="resource-cover" :src="safeUrl(resource.coverUrl)" alt="" width="480" height="240" loading="lazy">
     <div class="resource-card-inner">
       <div class="resource-top"><span class="resource-icon"><AppIcon :name="resource.type === 'file' ? 'file' : 'external'" /></span><span class="eyebrow">{{ resource.type === 'file' ? '文件资源' : '链接资源' }}</span><span v-if="resource.featured" class="badge">精选</span></div>

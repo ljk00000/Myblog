@@ -19,9 +19,9 @@ useBlogSeo(() => ({ title: q.value ? `搜索：${q.value}` : '搜索', descripti
 </script>
 <template>
   <div>
-    <header class="page-heading"><p class="eyebrow">FOLLOW YOUR CURIOSITY</p><h1>寻找一点灵感<span class="title-dot">.</span></h1><p>在公开文章与资源中，找到你关心的内容。</p></header>
+    <header class="page-heading"><h1>搜索</h1><p>搜索文章和资源的标题、摘要及正文。</p></header>
     <form class="search-form" role="search" @submit.prevent="submit"><label class="sr-only" for="global-search">搜索文章与资源</label><AppIcon name="search" /><input id="global-search" v-model="input" type="search" name="q" maxlength="200" placeholder="输入关键词，开始搜索…"><button class="button" type="submit" :disabled="!input.trim() || searching">{{ searching ? '搜索中…' : '搜索' }}</button></form>
-    <ContentState v-if="!q" title="从一个关键词开始" description="输入标题或内容中的关键词，同时查找文章与资源。" />
+    <ContentState v-if="!q" title="请输入关键词" />
     <div v-else id="results" class="search-results">
       <p class="search-summary" aria-live="polite">“{{ q }}” 的搜索结果</p>
       <section aria-labelledby="article-results-title" :aria-busy="articleStatus === 'pending'"><div class="section-heading"><h2 id="article-results-title">文章 <span v-if="!articleError && articleStatus !== 'pending'" class="count-label">{{ articleData?.total ?? 0 }}</span></h2></div><ContentState v-if="articleStatus === 'pending'" kind="loading" /><ContentState v-else-if="articleError" kind="error" title="文章搜索暂时不可用" description="请稍后重试。" retry @retry="refreshArticles()" /><div v-else-if="articleData?.list.length" class="article-list"><ArticleCard v-for="article in articleData.list" :key="article.id" :article="article" /></div><ContentState v-else title="没有找到相关文章" description="试试更简短的关键词。" /><PaginationNav v-if="!articleError && articleData" :total="articleData.total" :page="articlePage" :page-size="6" param="articlePage" /></section>

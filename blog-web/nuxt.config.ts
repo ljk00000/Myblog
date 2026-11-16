@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     baseURL,
     head: {
       htmlAttrs: { lang: 'zh-CN' },
-      meta: [{ name: 'theme-color', content: '#090b13' }],
+      meta: [{ name: 'theme-color', content: '#17191c' }],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` }],
     },
   },

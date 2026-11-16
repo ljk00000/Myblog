@@ -4,7 +4,7 @@ import { formatDate, isoDate, safeUrl } from '#shared/utils/format'
 defineProps<{ article: ArticleSummary }>()
 </script>
 <template>
-  <article class="article-card spotlight">
+  <article class="article-card">
     <div class="card-body">
       <div class="card-meta"><NuxtLink v-if="article.categoryId && article.categoryName" :to="{ path: '/articles', query: { categoryId: article.categoryId } }" class="category-label">{{ article.categoryName }}</NuxtLink><span v-if="article.pinned" class="badge">置顶</span><time v-if="isoDate(article.publishTime)" :datetime="isoDate(article.publishTime)">{{ formatDate(article.publishTime) }}</time></div>
       <h3><NuxtLink :to="`/articles/${article.slug}`">{{ article.title }}</NuxtLink></h3>

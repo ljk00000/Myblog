@@ -16,7 +16,7 @@ useBlogSeo(() => ({ title: title.value, description: '浏览已公开的文章�
 </script>
 <template>
   <div>
-    <header class="page-heading"><p class="eyebrow">THE WRITING ROOM</p><h1>{{ title }}<span class="title-dot">.</span></h1><p>写下思考，也留下探索的过程。</p></header>
+    <header class="page-heading"><h1>{{ title }}</h1><p>按分类、标签、月份或关键词查找文章。</p></header>
     <FilterBar :categories="categories" :tags="tags" />
     <div v-if="categoryError || tagError" class="site-notice" role="status">部分筛选项暂时无法加载。<button class="text-button" type="button" @click="retryFilters">重试筛选</button></div>
     <section id="results" class="results-section" aria-label="文章列表" :aria-busy="status === 'pending'">

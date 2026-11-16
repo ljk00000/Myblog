@@ -22,6 +22,6 @@ useBlogSeo(() => ({ title: article.value?.seoTitle || article.value?.title || '�
       <div v-if="article.tags?.length" class="tag-list"><NuxtLink v-for="tag in article.tags" :key="tag.id" :to="{ path: '/articles', query: { tagId: tag.id } }"># {{ tag.name }}</NuxtLink></div>
     </header>
     <img v-if="safeUrl(article.coverUrl)" class="detail-cover" :src="safeUrl(article.coverUrl)" :alt="article.title" width="1120" height="560" fetchpriority="high">
-    <div class="reading-layout" :class="{ 'has-toc': article.toc?.length }"><TocList :entries="article.toc || []" /><div class="reading-column"><ContentBody v-if="article.contentHtml" :html="article.contentHtml" /><ContentState v-else title="正文尚未填写" description="这篇文章暂时只有摘要。" /><div class="article-end"><span aria-hidden="true">—</span><p>感谢阅读</p><NuxtLink class="text-link" to="/articles">← 返回文章列表</NuxtLink></div></div></div>
+    <div class="reading-layout" :class="{ 'has-toc': article.toc?.length }"><TocList :entries="article.toc || []" /><div class="reading-column"><ContentBody v-if="article.contentHtml" :html="article.contentHtml" /><ContentState v-else title="正文尚未填写" description="这篇文章暂时只有摘要。" /><div class="article-end"><NuxtLink class="text-link" to="/articles">← 返回文章列表</NuxtLink></div></div></div>
   </article>
 </template>

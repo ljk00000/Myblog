@@ -15,10 +15,10 @@ useBlogSeo(() => ({ title: '归档', description: '沿着时间线，浏览每�
 </script>
 <template>
   <div class="narrow-page">
-    <header class="page-heading"><p class="eyebrow">A JOURNEY THROUGH TIME</p><h1>时间归档<span class="title-dot">.</span></h1><p>沿着时间，翻阅留下的文字。</p></header>
+    <header class="page-heading"><h1>归档</h1><p>按发布时间查看文章。</p></header>
     <ContentState v-if="status === 'pending'" kind="loading" />
     <ContentState v-else-if="error" kind="error" title="归档暂时无法加载" description="请稍后再试。" retry @retry="refresh()" />
     <div v-else-if="years.length" class="archive-timeline"><section v-for="[year, months] in years" :key="year" class="archive-year"><h2>{{ year }}<span>年</span></h2><ul><li v-for="month in months" :key="month.yearMonth"><NuxtLink :to="{ path: '/articles', query: { yearMonth: month.yearMonth } }"><span>{{ formatMonth(month.yearMonth) }}</span><span class="archive-count">{{ month.total }} 篇文章 <AppIcon name="arrow" /></span></NuxtLink></li></ul></section></div>
-    <ContentState v-else title="时间线还很安静" description="有文章发布后，这里会按月份整理归档。" />
+    <ContentState v-else title="暂无归档" description="还没有公开文章。" />
   </div>
 </template>

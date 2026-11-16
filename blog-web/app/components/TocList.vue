@@ -15,7 +15,7 @@ function observe() {
     }
     const first = props.entries.find(entry => visible.has(entry.id))
     if (first) active.value = first.id
-  }, { rootMargin: '-128px 0px -15% 0px', threshold: 0 })
+  }, { rootMargin: '-96px 0px -15% 0px', threshold: 0 })
   for (const entry of props.entries) {
     const heading = document.getElementById(entry.id)
     if (heading) observer.observe(heading)
