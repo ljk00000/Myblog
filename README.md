@@ -4,6 +4,14 @@
 
 首版提供 Nuxt 4 SSR 公开前台与 Vue 3 管理后台，支持文章、资源分享、分类、标签、Markdown 预览、文件上传和站点设置。访客无需登录；不包含评论、点赞、付费或访客账号。
 
+## 仓库与同步开发
+
+源码主仓库：[ljk00000/Myblog](https://github.com/ljk00000/Myblog)，默认开发分支为 `main`。前台、管理后台、Java 服务、部署脚本和项目文档都在这个仓库持续开发、提交和同步。
+
+本地 `origin` 指向主仓库，`main` 跟踪 `origin/main`。开发前先同步主分支，完成改动及相关检查后，正常提交并推送到 `origin/main`；保留现有提交历史。`upstream` 仅用于查阅上游来源。
+
+在线博客：[ljk00000.github.io](https://ljk00000.github.io/)。[网站发布仓库](https://github.com/ljk00000/ljk00000.github.io) 只保存审核后的静态产物。前台代码或公开内容更新后，按 [前台说明](blog-web/README.md) 重新导出并同步发布；源码提交与网站产物发布分别进行。
+
 ## 项目结构
 
 | 目录 | 用途 |
@@ -61,7 +69,7 @@ pnpm typecheck
 pnpm build
 ```
 
-公开页面包括首页、文章、资源、归档、关于和搜索；详情使用稳定 slug。配置后台站点 URL 后生成 canonical、Open Graph 与 sitemap。首次发布由服务器记录时间，保存已发布内容立即上线。数据迁移及操作顺序见 [博客实施说明](script/blog/README.md)。
+公开页面包括首页、文章、资源、归档、技术栈、关于和搜索；详情使用稳定 slug。配置后台站点 URL 后生成 canonical、Open Graph 与 sitemap。首次发布由服务器记录时间，保存已发布内容立即上线。数据迁移及操作顺序见 [博客实施说明](script/blog/README.md)。
 
 部署步骤见 [Docker Compose 说明](script/docker-compose/README.md)。本机公开前台 `http://127.0.0.1:3000`，后台 `http://127.0.0.1:8080`，网关 `http://127.0.0.1:48080`，Nacos 控制台 `http://127.0.0.1:18080`。发布到公网前应配置域名、HTTPS、公开文件地址及站点 URL，并更换体验账号密码。
 
@@ -75,4 +83,4 @@ pnpm build
 
 前端来源：芋道 Vue 3 管理后台（`yudaocode/yudao-ui-admin-vue3`），基线提交 `c67f134`。
 
-保留原项目 MIT 许可证及必要版权声明，详见根目录 [LICENSE](LICENSE) 和前端许可证。当前项目作为独立私密仓库管理，未使用 GitHub fork。
+保留原项目 MIT 许可证及必要版权声明，详见根目录 [LICENSE](LICENSE) 和[前端许可证](frontend/LICENSE)。当前项目作为独立开源仓库维护，未使用 GitHub fork。
