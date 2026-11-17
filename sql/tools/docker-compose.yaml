@@ -84,7 +84,7 @@ services:
         environment:
             TZ: Asia/Shanghai
             ACCEPT_EULA: "Y"
-            SA_PASSWORD: "Yudao@2024"
+            SA_PASSWORD: "Myblog@2024"
         ports:
             - "1433:1433"
         volumes:
@@ -130,7 +130,7 @@ services:
         restart: unless-stopped
         environment:
             GS_USERNAME: root
-            GS_PASSWORD: Yudao@2024
+            GS_PASSWORD: Myblog@2024
             LD_LIBRARY_PATH: /usr/local/opengauss/lib:/usr/lib
         ports:
             - "5432:5432"
@@ -284,7 +284,7 @@ services:
         shm_size: 1g
         environment:
             # omm 超级用户、mogdb 用户的密码：至少 8 位，包含大小写字母、数字及特殊字符
-            GS_PASSWORD: Yudao@2024
+            GS_PASSWORD: Myblog@2024
         ports:
             # 只绑定本机，应用使用 mogdb 用户连接（omm 初始用户不允许远程连接）
             - "127.0.0.1:15432:5432"

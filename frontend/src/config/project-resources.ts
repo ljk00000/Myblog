@@ -38,27 +38,27 @@ export const projectResources: ProjectResource[] = [
     category: '源码与配套项目'
   },
   {
-    title: 'yudao-cloud · Spring Cloud 微服务架构',
+    title: '上游 Spring Cloud 微服务架构',
     url: 'https://github.com/YunaiV/yudao-cloud',
     category: '源码与配套项目'
   },
   {
-    title: 'yudao-ui-admin-vue3 · Vue3 + Element Plus 管理后台',
+    title: '上游 Vue3 + Element Plus 管理后台',
     url: 'https://github.com/yudaocode/yudao-ui-admin-vue3',
     category: '源码与配套项目'
   },
   {
-    title: 'yudao-ui-admin-vben · Vue3 + vben5 (Ant Design) 管理后台',
+    title: '上游 Vue3 + vben5 (Ant Design) 管理后台',
     url: 'https://github.com/yudaocode/yudao-ui-admin-vben',
     category: '源码与配套项目'
   },
   {
-    title: 'yudao-mall-uniapp · Vue3 + uniapp 商城手机端',
+    title: '上游 Vue3 + uniapp 商城手机端',
     url: 'https://github.com/yudaocode/yudao-mall-uniapp',
     category: '源码与配套项目'
   },
   {
-    title: 'yudao-ui-admin-uniapp · Vue3 + uniapp 管理手机端',
+    title: '上游 Vue3 + uniapp 管理手机端',
     url: 'https://github.com/yudaocode/yudao-ui-admin-uniapp',
     category: '源码与配套项目'
   },

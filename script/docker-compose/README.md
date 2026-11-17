@@ -21,13 +21,13 @@ script/docker-compose
 
 | 服务 | 镜像 | 说明 |
 | --- | --- | --- |
-| `mysql` | `mysql:8.4` | 首次启动导入 `sql/mysql/ruoyi-vue-pro.sql`，数据卷 `yudao-cloud_mysql-data` |
-| `redis` | `redis:7.4-alpine` | 开启密码与 AOF，数据卷 `yudao-cloud_redis-data` |
-| `nacos` | `nacos/nacos-server:v3.0.3` | 可选（profile `nacos`），单机 + 嵌入式存储，数据卷 `yudao-cloud_nacos-data` |
-| `gateway` | `yudao-gateway:${GATEWAY_IMAGE_TAG:-${IMAGE_TAG}}` | 网关端口 48080，Nacos 服务名 `gateway-server` |
-| `system-server` | `yudao-module-system-server:${IMAGE_TAG}` | 由模块 Dockerfile 构建，端口 48081，Nacos 服务名 `system-server` |
-| `infra-server` | `yudao-module-infra-server:${IMAGE_TAG}` | 由模块 Dockerfile 构建，端口 48082，Nacos 服务名 `infra-server` |
-| `blog-server` | `yudao-module-blog:${BLOG_IMAGE_TAG}` | 博客内容，端口 48083，Nacos 服务名 `blog-server`，不映射宿主机端口 |
+| `mysql` | `mysql:8.4` | 首次启动导入 `sql/mysql/ruoyi-vue-pro.sql`，数据卷 `myblog_mysql-data` |
+| `redis` | `redis:7.4-alpine` | 开启密码与 AOF，数据卷 `myblog_redis-data` |
+| `nacos` | `nacos/nacos-server:v3.0.3` | 可选（profile `nacos`），单机 + 嵌入式存储，数据卷 `myblog_nacos-data` |
+| `gateway` | `myblog-gateway:${GATEWAY_IMAGE_TAG:-${IMAGE_TAG}}` | 网关端口 48080，Nacos 服务名 `gateway-server` |
+| `system-server` | `myblog-module-system-server:${IMAGE_TAG}` | 由模块 Dockerfile 构建，端口 48081，Nacos 服务名 `system-server` |
+| `infra-server` | `myblog-module-infra-server:${IMAGE_TAG}` | 由模块 Dockerfile 构建，端口 48082，Nacos 服务名 `infra-server` |
+| `blog-server` | `myblog-module-blog:${BLOG_IMAGE_TAG}` | 博客内容，端口 48083，Nacos 服务名 `blog-server`，不映射宿主机端口 |
 | `blog-web` | `myblog-web:${BLOG_IMAGE_TAG}` | Nuxt SSR，回环绑定 `${BLOG_WEB_PORT}`（默认 3000），Node 24 多阶段构建 |
 | `web` | `nginx:1.28-alpine` | 对宿主机开放 `${WEB_PORT}`（默认 8080） |
 
@@ -47,10 +47,10 @@ script/docker-compose
 在**源码根目录**执行：
 
 ```shell
-mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server,yudao-module-blog -am -Dmaven.test.skip=true
+mvn clean package -pl myblog-gateway,myblog-module-system/myblog-module-system-server,myblog-module-infra/myblog-module-infra-server,myblog-module-blog -am -Dmaven.test.skip=true
 ```
 
-产物为各服务 `target` 下对应名称的 JAR，包括 `yudao-module-blog/target/yudao-module-blog.jar`，由模块 Dockerfile 复制进镜像。博客单测命令及迁移说明见 `script/blog/README.md`。
+产物为各服务 `target` 下对应名称的 JAR，包括 `myblog-module-blog/target/myblog-module-blog.jar`，由模块 Dockerfile 复制进镜像。博客单测命令及迁移说明见 `script/blog/README.md`。
 
 ## 2. 准备前端产物
 
@@ -63,7 +63,7 @@ cd ..
 node script/blog-admin/build-frontend.cjs
 ```
 
-脚本默认使用同源 `/admin-api`、保留多租户、关闭验证码、清空默认登录账号密码和原项目统计，输出到 `frontend/dist-prod`。可以通过进程环境变量覆盖部署设置；验证码开关需与后端 `YUDAO_CAPTCHA_ENABLE` 一致。本机环境变量文件不提交。
+脚本默认使用同源 `/admin-api`、保留多租户、关闭验证码、清空默认登录账号密码和原项目统计，输出到 `frontend/dist-prod`。可以通过进程环境变量覆盖部署设置；验证码开关需与后端 `MYBLOG_CAPTCHA_ENABLE` 一致。本机环境变量文件不提交。
 
 将 `frontend/dist-prod` 中的内容（包含 `index.html`）复制到 `script/docker-compose/web/dist/`。Windows PowerShell 可在源码根目录执行：
 
@@ -86,6 +86,14 @@ cp .env.example .env
 
 按需修改 `.env`，至少替换 `MYSQL_ROOT_PASSWORD`、`MYSQL_PASSWORD`、`REDIS_PASSWORD` 三个示例密码；使用内置 Nacos 时同时替换 `NACOS_AUTH_TOKEN`、`NACOS_AUTH_IDENTITY_VALUE`。
 
+已有部署升级时，保留原 `.env` 中的数据库名、账号、密码和令牌，不要用示例文件覆盖。先运行 `docker volume ls`，将原 MySQL、Redis、Nacos 数据卷的名称分别填入 `MYSQL_VOLUME_NAME`、`REDIS_VOLUME_NAME`、`NACOS_VOLUME_NAME`。这三个变量必须显式配置，缺失时 Compose 会停止，不会因项目改名而自动使用空数据库。新部署可以使用示例中的 `myblog_*` 卷名。
+
+Java 自定义配置统一使用 `myblog.*`，环境变量使用 `MYBLOG_*`；已有 Nacos 配置中的旧项目配置前缀也需要同步改为 `myblog`，例如 `myblog.tenant.enable` 和 `myblog.demo`。数据库、Redis、Nacos 连接参数与服务名保持原值。后台默认租户名称留空，请输入现有数据库中的租户名称；也可以在构建时设置 `VITE_APP_DEFAULT_LOGIN_TENANT`。原始 `sql/` 初始化数据、作者署名、许可证和上游来源链接保留。
+
+项目改名会改变 Compose 容器和网络名。升级前先用旧版本编排正常停止旧服务，保留所有数据卷；核对以上卷名、配置前缀及连接参数后再用新版启动。不要同时运行两套连接相同数据卷的数据库容器。
+
+Java 包名也已更新。Redis 中此前序列化的对象可能包含旧类名，升级时需要重建这些派生缓存。先备份 Redis，并在旧服务停止后核对 `role:*`、`oauth_client:*`、`oauth2_access_token:*`、`notify_template:*`、`mail_account:*`、`mail_template:*`、`sms_template:*`、`wxa_subscribe_template:*`、`file_config:*` 中使用旧类名的缓存键，再按键删除；新服务会从数据库重新读取，管理员需要重新登录。不要清空 Redis 数据库、消息队列或数据库中的账号和授权记录。
+
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `WEB_PORT` | `8080` | 前端访问端口 |
@@ -94,13 +102,14 @@ cp .env.example .env
 | `BLOG_IMAGE_TAG` | `local` | blog-server、blog-web 镜像 tag |
 | `BLOG_WEB_PORT` | `3000` | Nuxt 前台回环访问端口 |
 | `BLOG_SITE_TENANT_ID` | `1` | 服务器固定的公开站点租户 |
+| `MYSQL_VOLUME_NAME` / `REDIS_VOLUME_NAME` / `NACOS_VOLUME_NAME` | 必填；新部署示例为 `myblog_*` | 已有部署填写原持久化卷名，避免切换到空数据卷 |
 | `MYSQL_DATABASE` | `ruoyi-vue-pro` | 数据库名 |
 | `MYSQL_ROOT_PASSWORD` | 示例值 | MySQL root 密码，仅供初始化与运维使用 |
-| `MYSQL_USER` / `MYSQL_PASSWORD` | `yudao` / 示例值 | 应用使用的账号，只拥有 `MYSQL_DATABASE` 库权限 |
+| `MYSQL_USER` / `MYSQL_PASSWORD` | `myblog` / 示例值 | 应用使用的账号，只拥有 `MYSQL_DATABASE` 库权限 |
 | `REDIS_PASSWORD` | 示例值 | Redis 密码 |
 | `SPRING_PROFILES_ACTIVE` | `dev` | 后端 profile，同时决定 Nacos Data ID 后缀 |
 | `JAVA_OPTS` | `-Xms512m -Xmx512m` | 四个 Java 服务共用的 JVM 参数 |
-| `YUDAO_CAPTCHA_ENABLE` | `true` | 是否开启登录验证码 |
+| `MYBLOG_CAPTCHA_ENABLE` | `true` | 是否开启登录验证码 |
 | `COMPOSE_PROFILES` | `nacos` | 为 `nacos` 时启动内置 Nacos；复用已部署的 Nacos 时清空 |
 | `NACOS_SERVER_ADDR` | `nacos:8848` | Nacos 地址，必须是**容器内**可访问的地址 |
 | `NACOS_NAMESPACE` | `public` | 命名空间 ID，注册中心与配置中心共用 |
@@ -113,7 +122,7 @@ cp .env.example .env
 - 数据库主库 `master`、从库 `slave`，Redis：指向 Compose 内的 `mysql`、`redis`
 - Nacos 地址、账号、命名空间、分组：`spring.cloud.nacos.*`
 - `xxl.job.enabled=false`：本编排不提供 XXL-Job 调度中心
-- `yudao.demo=false`：`application-dev.yaml` 默认开启的演示模式会禁止写操作
+- `myblog.demo=false`：`application-dev.yaml` 默认开启的演示模式会禁止写操作
 
 `blog-web` 的私有 `NUXT_API_BASE` 固定为 `http://gateway:48080/app-api/blog`，浏览器只使用 Nuxt 的 GET 白名单代理。发布到域名时，在后台“站点设置”更新规范站点 URL，并配置 HTTPS 与读者可访问的文件存储域名。修改域名不会自动修改以前写入正文的绝对文件地址。
 
@@ -159,7 +168,7 @@ docker compose logs -f gateway system-server infra-server blog-server blog-web
 ```shell
 # 后端：回到源码根目录重新打包，再回到本目录重建、重启
 cd ../..
-mvn clean package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server,yudao-module-blog -am -Dmaven.test.skip=true
+mvn clean package -pl myblog-gateway,myblog-module-system/myblog-module-system-server,myblog-module-infra/myblog-module-infra-server,myblog-module-blog -am -Dmaven.test.skip=true
 cd script/docker-compose
 docker compose up -d --build gateway system-server infra-server blog-server blog-web
 
@@ -178,12 +187,12 @@ docker compose restart web
 docker compose down
 ```
 
-**不要执行 `docker compose down -v`**，它会删除 `yudao-cloud_mysql-data`、`yudao-cloud_redis-data`、`yudao-cloud_nacos-data` 数据卷，数据库内容将全部丢失。
+**不要执行 `docker compose down -v`**，它会删除 `myblog_mysql-data`、`myblog_redis-data`、`myblog_nacos-data` 数据卷，数据库内容将全部丢失。
 
 ## 数据库初始化说明
 
 - SQL 只在 `mysql-data` 数据卷为空（首次启动）时执行一次；之后修改 SQL 文件、`.env` 中的 `MYSQL_*` 账号密码，都不会作用于已有数据库。
-- 首次导入中途失败（例如容器被强制停止），数据卷会处于半初始化状态，需要确认数据可丢弃后执行 `docker compose down`、`docker volume rm yudao-cloud_mysql-data` 再重新启动。
+- 首次导入中途失败（例如容器被强制停止），数据卷会处于半初始化状态，需要确认数据可丢弃后执行 `docker compose down`、`docker volume rm myblog_mysql-data` 再重新启动。
 - 已有数据卷升级到新版本时，SQL 不会自动执行。请先备份，再手动执行对应的升级 SQL，例如：
 
 ```shell

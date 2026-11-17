@@ -47,11 +47,11 @@ mvn -f sql/dm/flowable-patch-tests/pom.xml -Psb4 test
 
 覆盖 Spring Boot 自动装配（不手工关闭应用级 Liquibase）、首次建表与保持 `flowable.database-schema-update: true` 的重复启动、流程部署/发起/两级审批、退回与拒绝、取消、长文本和布尔变量、历史与分页、事务回滚、并行网关、定时 Job 执行、DMN 建表与决策，以及自动装配后一次部署多个 DMN/事件定义。6.8.0 另覆盖 Oracle/DM 两种 SPI 注册顺序，以及 DM 元数据与布尔类型识别。
 
-不包含完整芋道 Web 服务（微服务的网关、注册中心等）及前端浏览器验收，也不代表已验证所有流程模型、并发性能、跨版本历史库升级，或所有第三方 Flowable 用法。补丁合并到业务模块后，仍需在实际项目中验证启动及流程功能。
+不包含完整Myblog Web 服务（微服务的网关、注册中心等）及前端浏览器验收，也不代表已验证所有流程模型、并发性能、跨版本历史库升级，或所有第三方 Flowable 用法。补丁合并到业务模块后，仍需在实际项目中验证启动及流程功能。
 
 ## 5. 实现说明
 
-- 两个版本的 `DmFlowableConfiguration` 保持一致。通过 Spring `BeanPostProcessor`，在各个 Flowable 引擎配置 Bean 初始化前，按引擎实际连接的 JDBC 元数据识别达梦，设置工作流 Oracle 方言及普通插入，覆盖主引擎和 Spring 事件/DMN 子引擎。不修改 Flowable 原类，不替换全局 MyBatis `DatabaseIdProvider`，不依赖数据源名称或 `yudao.dameng.enabled` 开关。
+- 两个版本的 `DmFlowableConfiguration` 保持一致。通过 Spring `BeanPostProcessor`，在各个 Flowable 引擎配置 Bean 初始化前，按引擎实际连接的 JDBC 元数据识别达梦，设置工作流 Oracle 方言及普通插入，覆盖主引擎和 Spring 事件/DMN 子引擎。不修改 Flowable 原类，不替换全局 MyBatis `DatabaseIdProvider`，不依赖数据源名称或 `myblog.dameng.enabled` 开关。
 - 对达梦关闭 `INSERT ALL` 批量插入，避免部分 DM8 环境下普通用户访问 `SYS.SYSDUAL2` 失败，无需给业务账号授予 DBA。仅关闭主引擎不够，子引擎会将自己的批量实体重新注册到共享 SQL 工厂。代价是批量写入吞吐可能降低，需按实际负载压测。
 - 补丁只处理 Spring 管理的 Flowable 配置 Bean。手动 `new` 的非 Bean 配置、独立接入的其它引擎不会被自动覆盖，需要自行设置方言及插入策略。
 - 仅 6.8.0 使用 Liquibase SPI 注册 `DmDatabase extends OracleDatabase`，复用 Oracle 的字段、布尔值及 schema 识别逻辑，不覆盖 `BooleanType`。注册短名为独立的 `dm`，避免与原生 Oracle 实现竞争同一个注册键；Flowable 方言仍为 `oracle`，两者是不同机制。Flowable 6.8.0 自带的环境后处理器默认关闭 Spring Boot 应用级 Liquibase，内部事件/DMN 的 Liquibase 建表仍正常执行。

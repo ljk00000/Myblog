@@ -16,7 +16,7 @@ export const isAllElementPlusStyle = (env: Record<string, string> = {}) =>
 export const createElementPlusStylePlugin = (env: Record<string, string> = {}): Plugin => {
   const enabled = isAllElementPlusStyle(env)
   return {
-    name: 'yudao:element-plus-style',
+    name: 'myblog:element-plus-style',
     resolveId(id) {
       return id === VIRTUAL_ID ? RESOLVED_VIRTUAL_ID : undefined
     },

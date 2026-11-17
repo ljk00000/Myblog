@@ -2,7 +2,7 @@ import axios, { CanceledError } from 'axios'
 import type { InternalAxiosRequestConfig } from 'axios'
 
 /**
- * request 封装的请求取消能力（参考上游 32381408b 的 cancelRequest / cancelAllRequest，按芋道 service 适配）
+ * request 封装的请求取消能力（参考上游 32381408b 的 cancelRequest / cancelAllRequest，按Myblog service 适配）
  *
  * 只登记通过 request 封装发起、且调用方没有自行传入 signal / cancelToken 的请求；
  * 调用方自管的取消方式保持原样，不登记、不受 cancelRequest / cancelAllRequest 影响。

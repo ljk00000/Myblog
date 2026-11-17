@@ -1,0 +1,8 @@
+cn.iocoder.myblog.framework.apilog.config.MyblogApiLogAutoConfiguration
+cn.iocoder.myblog.framework.jackson.config.MyblogJacksonAutoConfiguration
+cn.iocoder.myblog.framework.swagger.config.MyblogSwaggerAutoConfiguration
+cn.iocoder.myblog.framework.web.config.MyblogWebAutoConfiguration
+cn.iocoder.myblog.framework.apilog.config.MyblogApiLogRpcAutoConfiguration
+cn.iocoder.myblog.framework.xss.config.MyblogXssAutoConfiguration
+cn.iocoder.myblog.framework.banner.config.MyblogBannerAutoConfiguration
+cn.iocoder.myblog.framework.encrypt.config.MyblogApiEncryptAutoConfiguration

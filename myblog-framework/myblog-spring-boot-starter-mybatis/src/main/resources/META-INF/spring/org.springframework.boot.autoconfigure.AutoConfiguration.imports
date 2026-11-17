@@ -1,0 +1,3 @@
+cn.iocoder.myblog.framework.datasource.config.MyblogDataSourceAutoConfiguration
+cn.iocoder.myblog.framework.mybatis.config.MyblogMybatisAutoConfiguration
+cn.iocoder.myblog.framework.translate.config.MyblogTranslateAutoConfiguration

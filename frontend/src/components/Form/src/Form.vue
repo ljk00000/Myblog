@@ -383,7 +383,7 @@ export default defineComponent({
         : 'componentProps.options'
     }
 
-    // 已有非空 options / data（如芋道字典静态选项、调用方手动填入）时不使用 optionApi
+    // 已有非空 options / data（如Myblog字典静态选项、调用方手动填入）时不使用 optionApi
     const hasOptions = (item?: FormSchema) => {
       const { options, data } = (item?.componentProps || {}) as Recordable
       return [options, data].some((list) => Array.isArray(list) && list.length > 0)

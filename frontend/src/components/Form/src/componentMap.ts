@@ -28,7 +28,7 @@ import FormTransfer from './components/FormTransfer.vue'
 
 // JSON 编辑器同样按需加载，避免使用 Form 的页面因此加载 jsoneditor
 const JsonEditor = defineAsyncComponent(() => import('@/components/JsonEditor/src/JsonEditor.vue'))
-// 图标选择（上游组件名 IconPicker，参考 99ffe6a86）复用芋道 IconSelect，按需加载图标数据
+// 图标选择（上游组件名 IconPicker，参考 99ffe6a86）复用Myblog IconSelect，按需加载图标数据
 const IconPicker = defineAsyncComponent(() => import('@/components/Icon/src/IconSelect.vue'))
 
 const componentMap: Recordable<Component, ComponentName> = {
@@ -59,7 +59,7 @@ const componentMap: Recordable<Component, ComponentName> = {
   UploadImg: UploadImg,
   UploadImgs: UploadImgs,
   UploadFile: UploadFile,
-  // 兼容上游组件名 Upload（参考 c181887f7）：原生 ElUpload，绑定 file-list；业务上传仍使用上面三个芋道组件
+  // 兼容上游组件名 Upload（参考 c181887f7）：原生 ElUpload，绑定 file-list；业务上传仍使用上面三个Myblog组件
   Upload: ElUpload,
   IAgree: IAgree,
   JsonEditor: JsonEditor,

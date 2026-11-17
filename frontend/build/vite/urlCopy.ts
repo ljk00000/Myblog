@@ -12,7 +12,7 @@ type CopyMode = 'local' | 'network'
 const COPY_TIMEOUT = 3000
 
 // 本进程最近一次复制的地址：vite.config 变更触发 server 重启且地址未变时，不重复写入剪贴板
-const LAST_COPIED_KEY = Symbol.for('yudao:url-copy:last')
+const LAST_COPIED_KEY = Symbol.for('myblog:url-copy:last')
 
 const isCI = () => !!process.env.CI && process.env.CI !== 'false'
 
@@ -94,7 +94,7 @@ export const createUrlCopyPlugin = (env: Record<string, string> = {}): Plugin | 
   const mode = env.VITE_DEV_URL_COPY
   if (mode !== 'local' && mode !== 'network') return undefined
   return {
-    name: 'yudao:url-copy',
+    name: 'myblog:url-copy',
     apply: 'serve',
     configureServer(server) {
       const httpServer = server.httpServer

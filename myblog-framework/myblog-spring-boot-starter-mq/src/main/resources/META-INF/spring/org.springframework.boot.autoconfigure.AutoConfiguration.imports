@@ -1,0 +1,3 @@
+cn.iocoder.myblog.framework.mq.redis.config.MyblogRedisMQProducerAutoConfiguration
+cn.iocoder.myblog.framework.mq.redis.config.MyblogRedisMQConsumerAutoConfiguration
+cn.iocoder.myblog.framework.mq.rabbitmq.config.MyblogRabbitMQAutoConfiguration

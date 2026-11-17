@@ -1,0 +1,2 @@
+cn.iocoder.myblog.framework.env.config.MyblogEnvWebAutoConfiguration
+cn.iocoder.myblog.framework.env.config.MyblogEnvRpcAutoConfiguration

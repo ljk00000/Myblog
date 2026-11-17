@@ -4,7 +4,7 @@
 
 ## 目录边界
 
-- `yudao-module-blog/`：独立 `blog-server`（端口 48083），遵循现有 Maven、Security、MyBatis、多租户、Feign、Nacos 约定。现阶段没有其他服务调用博客，不创建无用途的 blog-api。
+- `myblog-module-blog/`：独立 `blog-server`（端口 48083），遵循现有 Maven、Security、MyBatis、多租户、Feign、Nacos 约定。现阶段没有其他服务调用博客，不创建无用途的 blog-api。
 - `frontend/src/api/blog/`、`frontend/src/views/blog/`：管理端业务；组件路径分别为 `blog/article/index`、`blog/resource/index`、`blog/category/index`、`blog/tag/index`、`blog/site/index`。
 - `blog-web/`：Nuxt 4.5.0 + Vue + TypeScript，SSR；独立 lock 和构建。通过受限的 Nuxt GET 代理访问公开 Java 接口，SSR 与浏览器均走同一代理，不转发访客身份或租户头。
 - `script/blog/`：建表与菜单迁移、说明、验收约定。网关、根 POM 和 Compose 由集成阶段修改。

@@ -1,6 +1,6 @@
 # 博客首版安装与发布
 
-`yudao-module-blog` 提供 Java 内容服务，`blog-web` 提供 Nuxt SSR 前台，`frontend/src/views/blog` 提供后台五个内容管理页面。API/DTO 约定见 [CONTRACT.md](CONTRACT.md)。
+`myblog-module-blog` 提供 Java 内容服务，`blog-web` 提供 Nuxt SSR 前台，`frontend/src/views/blog` 提供后台五个内容管理页面。API/DTO 约定见 [CONTRACT.md](CONTRACT.md)。
 
 ## 数据库安装
 
@@ -25,8 +25,8 @@ mysql --default-character-set=utf8mb4 -u <user> -p <database> < script/blog/menu
 在根目录执行博客测试及打包：
 
 ```shell
-mvn -pl yudao-module-blog -am "-Dtest=Blog*Test" "-Dsurefire.failIfNoSpecifiedTests=false" test
-mvn -pl yudao-gateway,yudao-module-blog -am -DskipTests package
+mvn -pl myblog-module-blog -am "-Dtest=Blog*Test" "-Dsurefire.failIfNoSpecifiedTests=false" test
+mvn -pl myblog-gateway,myblog-module-blog -am -DskipTests package
 node script/blog-admin/build-frontend.cjs
 ```
 

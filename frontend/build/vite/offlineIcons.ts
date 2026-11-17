@@ -184,7 +184,7 @@ export const createOfflineIconsPlugin = (env: Record<string, string> = {}): Plug
   }
 
   return {
-    name: 'yudao:offline-icons',
+    name: 'myblog:offline-icons',
     configResolved(resolvedConfig) {
       config = resolvedConfig
     },

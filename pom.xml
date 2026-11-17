@@ -4,21 +4,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.iocoder.cloud</groupId>
-    <artifactId>yudao</artifactId>
+    <artifactId>myblog</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
-        <module>yudao-dependencies</module>
-        <module>yudao-gateway</module>
-        <module>yudao-framework</module>
-        <module>yudao-module-system</module>
-        <module>yudao-module-infra</module>
-        <module>yudao-module-blog</module>
+        <module>myblog-dependencies</module>
+        <module>myblog-gateway</module>
+        <module>myblog-framework</module>
+        <module>myblog-module-system</module>
+        <module>myblog-module-infra</module>
+        <module>myblog-module-blog</module>
     </modules>
 
     <name>${project.artifactId}</name>
-    <description>芋道项目基础脚手架</description>
-    <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
+    <description>Myblog 个人博客与资源分享站</description>
+    <url>https://github.com/ljk00000/Myblog</url>
 
     <properties>
         <revision>2026.10-jdk25-SNAPSHOT</revision>
@@ -40,7 +40,7 @@
         <dependencies>
             <dependency>
                 <groupId>cn.iocoder.cloud</groupId>
-                <artifactId>yudao-dependencies</artifactId>
+                <artifactId>myblog-dependencies</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>

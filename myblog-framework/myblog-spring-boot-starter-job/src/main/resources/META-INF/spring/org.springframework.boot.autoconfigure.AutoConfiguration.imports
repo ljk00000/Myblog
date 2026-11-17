@@ -1,0 +1,2 @@
+cn.iocoder.myblog.framework.quartz.config.MyblogXxlJobAutoConfiguration
+cn.iocoder.myblog.framework.quartz.config.MyblogAsyncAutoConfiguration

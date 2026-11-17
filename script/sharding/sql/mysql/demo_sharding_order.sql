@@ -9,13 +9,13 @@
 -- 4. 不要在 master 主库创建同名的 demo_sharding_order 表，避免数据源切换失效时“静默”写入主库
 -- ----------------------------
 
-CREATE DATABASE IF NOT EXISTS `yudao_sharding_0` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE IF NOT EXISTS `yudao_sharding_1` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `myblog_sharding_0` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `myblog_sharding_1` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- ----------------------------
--- ds_0：yudao_sharding_0
+-- ds_0：myblog_sharding_0
 -- ----------------------------
-CREATE TABLE IF NOT EXISTS `yudao_sharding_0`.`demo_sharding_order_0` (
+CREATE TABLE IF NOT EXISTS `myblog_sharding_0`.`demo_sharding_order_0` (
   `id` bigint NOT NULL COMMENT '编号',
   `user_id` bigint NOT NULL COMMENT '用户编号（分片键）',
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单名称',
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `yudao_sharding_0`.`demo_sharding_order_0` (
   KEY `idx_user_id` (`user_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '分库分表示例订单表';
 
-CREATE TABLE IF NOT EXISTS `yudao_sharding_0`.`demo_sharding_order_1` (
+CREATE TABLE IF NOT EXISTS `myblog_sharding_0`.`demo_sharding_order_1` (
   `id` bigint NOT NULL COMMENT '编号',
   `user_id` bigint NOT NULL COMMENT '用户编号（分片键）',
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单名称',
@@ -44,9 +44,9 @@ CREATE TABLE IF NOT EXISTS `yudao_sharding_0`.`demo_sharding_order_1` (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '分库分表示例订单表';
 
 -- ----------------------------
--- ds_1：yudao_sharding_1
+-- ds_1：myblog_sharding_1
 -- ----------------------------
-CREATE TABLE IF NOT EXISTS `yudao_sharding_1`.`demo_sharding_order_0` (
+CREATE TABLE IF NOT EXISTS `myblog_sharding_1`.`demo_sharding_order_0` (
   `id` bigint NOT NULL COMMENT '编号',
   `user_id` bigint NOT NULL COMMENT '用户编号（分片键）',
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单名称',
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `yudao_sharding_1`.`demo_sharding_order_0` (
   KEY `idx_user_id` (`user_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '分库分表示例订单表';
 
-CREATE TABLE IF NOT EXISTS `yudao_sharding_1`.`demo_sharding_order_1` (
+CREATE TABLE IF NOT EXISTS `myblog_sharding_1`.`demo_sharding_order_1` (
   `id` bigint NOT NULL COMMENT '编号',
   `user_id` bigint NOT NULL COMMENT '用户编号（分片键）',
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单名称',

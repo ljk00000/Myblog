@@ -4,7 +4,7 @@ const path = require('node:path')
 // Explicit defaults also override any upstream .env files left on a developer machine.
 // Set process environment variables before running this script to customize a deployment.
 const defaults = {
-  VITE_APP_TITLE: '芋道管理系统',
+  VITE_APP_TITLE: 'Myblog 管理后台',
   VITE_PORT: '80',
   VITE_OPEN: 'false',
   VITE_BASE_PATH: '/',
@@ -14,7 +14,7 @@ const defaults = {
   VITE_UPLOAD_TYPE: 'server',
   VITE_APP_CAPTCHA_ENABLE: 'false',
   VITE_APP_TENANT_ENABLE: 'true',
-  VITE_APP_DEFAULT_LOGIN_TENANT: '芋道源码',
+  VITE_APP_DEFAULT_LOGIN_TENANT: '',
   VITE_APP_DEFAULT_LOGIN_USERNAME: '',
   VITE_APP_DEFAULT_LOGIN_PASSWORD: '',
   VITE_APP_BAIDU_CODE: '',

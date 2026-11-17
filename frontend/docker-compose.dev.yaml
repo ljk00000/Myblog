@@ -1,7 +1,7 @@
 # 可选开发容器（参考上游 7a0d401b5d）：docker compose -f docker-compose.dev.yaml up --build
 # 宿主只在 127.0.0.1 上暴露端口，默认 http://127.0.0.1:5173，可用 DEV_PORT 修改；NODE_IMAGE 可替换基础镜像来源
 services:
-  yudao-ui-admin-dev:
+  myblog-ui-admin-dev:
     build:
       context: .
       dockerfile: Dockerfile.dev

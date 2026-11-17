@@ -210,7 +210,7 @@ export interface TransferComponentProps
   rightDefaultChecked?: FormTransferKey[]
 }
 
-// InputPassword：芋道封装组件，自身属性为 strength（是否显示密码强度）；
+// InputPassword：Myblog封装组件，自身属性为 strength（是否显示密码强度）；
 // 其余属性透传给内部 ElInput，组件不转发插槽。type 默认 password，显隐使用 ElInput 内置 showPassword；
 // 显式传入的 type / showPassword 优先，未传 showPassword 时仅 type 为 password 才开启（参考上游 207c5b3fc）
 export interface InputPasswordComponentProps

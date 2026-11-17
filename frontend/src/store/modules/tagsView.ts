@@ -192,7 +192,7 @@ export const useTagsViewStore = defineStore('tagsView', {
       if (path == null && !selectedTag) return
       const isTarget = (v: RouteLocationNormalizedLoaded) => {
         if (path != null) return v.path === path
-        // 芋道同一路径、不同 query 的页面各自成 tag，当前 tag 按 fullPath 定位；没有 fullPath 的自建 tag 回退按 path
+        // Myblog同一路径、不同 query 的页面各自成 tag，当前 tag 按 fullPath 定位；没有 fullPath 的自建 tag 回退按 path
         return selectedTag?.fullPath
           ? v.fullPath === selectedTag.fullPath
           : v.path === selectedTag?.path

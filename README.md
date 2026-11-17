@@ -1,6 +1,6 @@
 # Myblog
 
-基于芋道 Cloud `master-jdk25` 的个人博客，保留 JDK 25、Spring Boot 4、Spring Cloud Alibaba、Nacos 和微服务学习能力。
+个人博客与资源分享站，使用 JDK 25、Spring Boot 4、Spring Cloud Alibaba 和 Nacos，同时保留微服务学习能力。
 
 首版提供 Nuxt 4 SSR 公开前台与 Vue 3 管理后台，支持文章、资源分享、分类、标签、Markdown 预览、文件上传和站点设置。访客无需登录；可选的[站长登录](blog-web/AUTH.md)通过 Supabase Auth 接入，支持静态站点，不包含评论、点赞、付费或访客注册。
 
@@ -18,12 +18,12 @@
 | --- | --- |
 | `frontend` | Vue 3 + Element Plus 管理后台源码 |
 | `blog-web` | Nuxt 4 + Vue 3 公开前台、SSR 与 SEO |
-| `yudao-module-blog` | 博客内容、发布、Markdown 净化与公开 API |
-| `yudao-gateway` | API 网关 |
-| `yudao-module-system` | 登录鉴权、账号、角色、权限、菜单、字典和日志等系统底座 |
-| `yudao-module-infra` | 文件、存储配置、参数、代码生成、数据源及 API 日志 |
-| `yudao-framework` | 保留服务依赖的公共框架 |
-| `yudao-dependencies` | Maven 依赖管理 |
+| `myblog-module-blog` | 博客内容、发布、Markdown 净化与公开 API |
+| `myblog-gateway` | API 网关 |
+| `myblog-module-system` | 登录鉴权、账号、角色、权限、菜单、字典和日志等系统底座 |
+| `myblog-module-infra` | 文件、存储配置、参数、代码生成、数据源及 API 日志 |
+| `myblog-framework` | 保留服务依赖的公共框架 |
+| `myblog-dependencies` | Maven 依赖管理 |
 | `script/docker-compose` | 四个 Java 服务、Nuxt、管理端 Nginx、MySQL、Redis、Nacos 部署 |
 | `script/blog-admin` | 后台基础导航迁移、回滚和实施说明 |
 | `script/blog` | 博客表结构、内容菜单迁移、接口合同和发布说明 |
@@ -46,7 +46,7 @@
 
 ```shell
 mvn -B validate
-mvn -B package -pl yudao-gateway,yudao-module-system/yudao-module-system-server,yudao-module-infra/yudao-module-infra-server,yudao-module-blog -am -DskipTests
+mvn -B package -pl myblog-gateway,myblog-module-system/myblog-module-system-server,myblog-module-infra/myblog-module-infra-server,myblog-module-blog -am -DskipTests
 ```
 
 前端在仓库根目录执行：

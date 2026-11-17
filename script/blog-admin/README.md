@@ -39,8 +39,8 @@
 在仓库根目录的 PowerShell 中执行，无需在命令中填写数据库密码：
 
 ```powershell
-docker cp .\script\blog-admin\menu.apply.sql yudao-cloud-mysql-1:/tmp/blog-admin-menu.apply.sql
-docker exec yudao-cloud-mysql-1 sh -c 'export MYSQL_PWD=$MYSQL_ROOT_PASSWORD; exec mysql -uroot --default-character-set=utf8mb4 $MYSQL_DATABASE < /tmp/blog-admin-menu.apply.sql'
+docker cp .\script\blog-admin\menu.apply.sql myblog-mysql-1:/tmp/blog-admin-menu.apply.sql
+docker exec myblog-mysql-1 sh -c 'export MYSQL_PWD=$MYSQL_ROOT_PASSWORD; exec mysql -uroot --default-character-set=utf8mb4 $MYSQL_DATABASE < /tmp/blog-admin-menu.apply.sql'
 ```
 
 脚本默认的 Nacos 浏览器地址是 `http://127.0.0.1:18080/#/configurationManagement`，只适用于当前本机体验环境。部署到其他环境时，在同一 MySQL 会话先执行 `SET @blog_nacos_url = 'https://实际控制台地址/';`，再 `SOURCE /tmp/blog-admin-menu.apply.sql;`。已应用后调整地址应使用后台菜单管理；不要通过重复执行迁移覆盖后续配置。
@@ -52,7 +52,7 @@ docker exec yudao-cloud-mysql-1 sh -c 'export MYSQL_PWD=$MYSQL_ROOT_PASSWORD; ex
 后端登录权限信息从现有菜单表和授权表生成。SQL 绕过了服务层缓存注解，因此需删除这次新增菜单相关的缓存键，不使用 `FLUSHDB` 或 `FLUSHALL`。当前配置使用 Redis database 1，当前 Nacos 菜单 ID 为 25345：
 
 ```powershell
-docker exec yudao-cloud-redis-1 redis-cli -n 1 DEL permission_menu_ids:infra:config:query menu_role_ids:25345 menu_role_ids:2
+docker exec myblog-redis-1 redis-cli -n 1 DEL permission_menu_ids:infra:config:query menu_role_ids:25345 menu_role_ids:2
 ```
 
 其他环境应使用迁移输出的 Nacos 菜单 ID。租户套餐在当前实现中直接读取数据库，不需要清空 Redis。前端已有会话需正常退出后重新登录，以刷新 `roleRouters` 等登录缓存。不得删除 Redis 中的全部令牌或业务数据。
@@ -60,8 +60,8 @@ docker exec yudao-cloud-redis-1 redis-cli -n 1 DEL permission_menu_ids:infra:con
 ### 菜单回滚
 
 ```powershell
-docker cp .\script\blog-admin\menu.rollback.sql yudao-cloud-mysql-1:/tmp/blog-admin-menu.rollback.sql
-docker exec yudao-cloud-mysql-1 sh -c 'export MYSQL_PWD=$MYSQL_ROOT_PASSWORD; exec mysql -uroot --default-character-set=utf8mb4 $MYSQL_DATABASE < /tmp/blog-admin-menu.rollback.sql'
+docker cp .\script\blog-admin\menu.rollback.sql myblog-mysql-1:/tmp/blog-admin-menu.rollback.sql
+docker exec myblog-mysql-1 sh -c 'export MYSQL_PWD=$MYSQL_ROOT_PASSWORD; exec mysql -uroot --default-character-set=utf8mb4 $MYSQL_DATABASE < /tmp/blog-admin-menu.rollback.sql'
 ```
 
 回滚恢复本次修改的导航字段、套餐菜单列表，移除本次新建的 Nacos 菜单和自动新增的授权；保留原业务权限和其他表。回滚后再次执行不会修改数据。回滚后仍需执行上述精确缓存刷新并重新登录。源码裁剪后，菜单回滚本身不能恢复已删除功能；还需恢复对应的旧版源码或产物，再重新构建部署。
@@ -125,9 +125,9 @@ node script/blog-admin/build-frontend.cjs
 
 ### 删除范围与依赖边界
 
-- 后端删除 member、BPM、pay、report、mp、mall、CRM、ERP、IoT、MES、WMS、IM、AI、HRM、FMS、PMS、OA 共 17 个无关业务模块，以及可选单体入口 `yudao-server` 和 infra 演示控制器、服务及数据访问实现，共 6,858 个原受控文件。
+- 后端删除 member、BPM、pay、report、mp、mall、CRM、ERP、IoT、MES、WMS、IM、AI、HRM、FMS、PMS、OA 共 17 个无关业务模块，以及可选单体入口 `myblog-server` 和 infra 演示控制器、服务及数据访问实现，共 6,858 个原受控文件。
 - 前端相对原前端基线删除 2,764 个文件，清除对应业务视图、API、详情路由、演示、监控入口及无引用专用组件和资源；移除 37 个直接依赖，lock 中包条目由 1,197 减至 927，无新增包、无保留依赖版本升级。
-- 额外删除未被部署或依赖引用的 `script/livekit-poc` 14 个文件，以及 `yudao-ui` 中 5 个旧前端占位 README。保留 Sentinel、Seata、sharding 等学习示例。
+- 额外删除未被部署或依赖引用的 `script/livekit-poc` 14 个文件，以及 `myblog-ui` 中 5 个旧前端占位 README。保留 Sentinel、Seata、sharding 等学习示例。
 - 根 Maven 聚合、依赖管理和网关路由收敛到 gateway、system、infra 及共享框架。部门、岗位、租户、OAuth、权限、登录、日志、文件等仍被保留页面和公共 API 使用的底座按依赖保留。
 - 不删除原业务表、按钮权限、角色授权或既有数据。动态路由先经过 `filterAvailableRoutes()` 过滤，已无组件的叶菜单及空目录不会注册为可访问页面；外链继续保留。
 - 前后端纳入单一仓库，`frontend` 为普通源码目录。根目录及前端 MIT 许可证、来源声明和全部 192 项原项目资源保留。本机环境变量、认证信息、依赖缓存、构建产物及 `.pi` 不提交。

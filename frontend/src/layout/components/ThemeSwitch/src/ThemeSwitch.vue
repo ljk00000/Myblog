@@ -23,7 +23,7 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 // 与 store 双向同步是否是暗黑主题，避免只取初始快照导致外部修改后状态不一致；
-// 只切换暗黑状态，不重设芋道自定义的菜单 / 头部颜色
+// 只切换暗黑状态，不重设Myblog自定义的菜单 / 头部颜色
 const isDark = computed({
   get: () => appStore.getIsDark,
   set: (val: boolean) => {

@@ -1,0 +1,2 @@
+cn.iocoder.myblog.framework.tracer.config.MyblogTracerAutoConfiguration
+cn.iocoder.myblog.framework.tracer.config.MyblogMetricsAutoConfiguration
