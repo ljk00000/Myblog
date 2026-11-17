@@ -1,83 +1,124 @@
 # Myblog
 
-个人博客与资源分享站，使用 JDK 25、Spring Boot 4、Spring Cloud Alibaba 和 Nacos，同时保留微服务学习能力。
+[![Java CI](https://github.com/ljk00000/Myblog/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/ljk00000/Myblog/actions/workflows/maven.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-首版提供 Nuxt 4 SSR 公开前台与 Vue 3 管理后台，支持文章、资源分享、分类、标签、Markdown 预览、文件上传和站点设置。访客无需登录；可选的[站长登录](blog-web/AUTH.md)通过 Supabase Auth 接入，支持静态站点，不包含评论、点赞、付费或访客注册。
+Myblog 是一个支持文章发布和资源分享的个人博客系统，包含公开前台、内容管理后台和 Java 内容服务。公开前台支持 Nuxt SSR 与 GitHub Pages 静态发布。
 
-## 仓库与同步开发
+[在线博客](https://ljk00000.github.io/) · [部署指南](script/docker-compose/README.md) · [开发文档](#文档导航) · [问题反馈](https://github.com/ljk00000/Myblog/issues)
 
-源码主仓库：[ljk00000/Myblog](https://github.com/ljk00000/Myblog)，默认开发分支为 `main`。前台、管理后台、Java 服务、部署脚本和项目文档都在这个仓库持续开发、提交和同步。
+## 项目预览
 
-本地 `origin` 指向主仓库，`main` 跟踪 `origin/main`。开发前先同步主分支，完成改动及相关检查后，正常提交并推送到 `origin/main`；保留现有提交历史。`upstream` 仅用于查阅上游来源。
+当前公开博客通过 GitHub Pages 发布，文章和资源允许匿名阅读。
 
-在线博客：[ljk00000.github.io](https://ljk00000.github.io/)。[网站发布仓库](https://github.com/ljk00000/ljk00000.github.io) 只保存审核后的静态产物。前台代码或公开内容更新后，按 [前台说明](blog-web/README.md) 重新导出并同步发布；源码提交与网站产物发布分别进行。
+| 页面 | 预览 |
+| --- | --- |
+| 首页 | [最新文章与精选资源](https://ljk00000.github.io/) |
+| 文章 | [文章列表与筛选](https://ljk00000.github.io/articles/) |
+| 资源 | [链接与文件资源](https://ljk00000.github.io/resources/) |
+| 技术栈 | [技术清单与系统架构](https://ljk00000.github.io/tech-stack/) |
+
+内容管理后台随完整应用部署，启动后通过 `http://127.0.0.1:8080` 访问。
+
+## 功能特性
+
+- **文章阅读**：分类、标签、关键词和月份筛选，搜索、归档、分页、标题目录、代码复制与阅读进度。
+- **资源分享**：发布链接或文件资源，支持分类、类型筛选、精选推荐与独立详情页。
+- **内容管理**：Markdown 编辑与服务端预览，维护摘要、封面和 SEO 信息，支持草稿、发布、编辑与下架。
+- **媒体与站点**：上传图片和附件，设置博客标题、作者、关于页、社交链接及页脚。
+- **账号与运维**：管理员账号、角色权限、登录与操作日志，以及文件存储、参数、代码生成等开发工具。
+- **页面与发布**：响应式布局、SSR 正文、独立页面地址、真实 404、canonical、Open Graph、sitemap 与静态导出。
+
+## 技术栈
+
+| 部分 | 主要技术 |
+| --- | --- |
+| 公开前台 | Nuxt 4、Vue 3、TypeScript |
+| 管理后台 | Vue 3、Element Plus、Vite |
+| Java 服务 | JDK 25、Spring Boot 4、Spring Cloud Gateway、Spring Cloud Alibaba、MyBatis-Plus |
+| 数据与服务治理 | MySQL 8、Redis 7、Nacos 3 |
+| 内容处理 | CommonMark、Jsoup |
+| 构建与部署 | Maven、pnpm、Docker Compose、Nginx、GitHub Pages |
+| 可选前台登录 | Supabase Auth，仅用于站长身份验证 |
+
+## 快速开始
+
+完整应用使用 JDK 25、Maven 3.9、Node.js 24 和 pnpm 10；两套前端的包管理器版本以各自的 `package.json` 为准。Docker Compose 要求 V2.20.2 或以上，编排包含 MySQL、Redis 和可选的内置 Nacos。
+
+```shell
+git clone git@github.com:ljk00000/Myblog.git
+cd Myblog
+```
+
+首次启动按以下顺序进行：
+
+1. 按[部署指南](script/docker-compose/README.md)准备环境，从 `script/docker-compose/.env.example` 创建本机 `.env`，设置数据库、Redis、Nacos 及数据卷参数。
+2. 先启动 MySQL 等基础组件，确认上游数据库初始化完成，再按[博客安装说明](script/blog/README.md#数据库安装)依次应用后台导航、博客表结构和内容菜单迁移。
+3. 按部署指南构建 Java 服务和管理后台，将后台产物放入 Nginx 挂载目录，再通过 Compose 构建并启动完整应用。
+4. 登录管理后台，填写站点资料，创建分类、标签、文章或资源，并检查公开前台的展示结果。
+
+| 入口 | 默认本机地址 |
+| --- | --- |
+| 公开前台 | <http://127.0.0.1:3000> |
+| 管理后台 | <http://127.0.0.1:8080> |
+| API 网关 | <http://127.0.0.1:48080> |
+| Nacos 控制台 | <http://127.0.0.1:18080> |
+
+已有部署升级时，按[部署指南的环境配置说明](script/docker-compose/README.md#3-配置环境变量)复用原数据卷、连接参数和账号；保留现有业务库，并处理包名更新后的派生缓存。
+
+## 部署与发布
+
+| 模式 | 运行方式 | 内容更新 |
+| --- | --- | --- |
+| Nuxt SSR | Nuxt 在访问时调用 Java 公开 API，需要后端与数据库等服务运行 | 保存已发布内容后，后续请求读取新版本 |
+| GitHub Pages | 构建时读取匿名公开 API，发布 HTML、静态资源和公开 JSON 快照；读者访问时由 Pages 提供内容 | 后台更新后重新导出并发布，公网页面才会更新 |
+
+完整应用的启动、升级与回滚见 [Docker Compose 部署指南](script/docker-compose/README.md)。GitHub Pages 的导出、检查和发布见[前台静态发布说明](blog-web/README.md#github-pages-静态发布)。静态导出后，如需验证或部署动态 SSR，应重新执行普通 `pnpm build`。
+
+源码由 [Myblog](https://github.com/ljk00000/Myblog) 仓库维护，静态产物发布到 [ljk00000.github.io](https://github.com/ljk00000/ljk00000.github.io) 仓库。提交源码与发布网站产物分别进行。
 
 ## 项目结构
 
-| 目录 | 用途 |
+| 目录 | 职责 |
 | --- | --- |
-| `frontend` | Vue 3 + Element Plus 管理后台源码 |
-| `blog-web` | Nuxt 4 + Vue 3 公开前台、SSR 与 SEO |
-| `myblog-module-blog` | 博客内容、发布、Markdown 净化与公开 API |
+| `blog-web` | 公开博客，包含 SSR 页面与 Pages 静态导出 |
+| `frontend` | 内容管理后台 |
+| `myblog-module-blog` | 内容、发布、Markdown 渲染与公开 API |
 | `myblog-gateway` | API 网关 |
-| `myblog-module-system` | 登录鉴权、账号、角色、权限、菜单、字典和日志等系统底座 |
-| `myblog-module-infra` | 文件、存储配置、参数、代码生成、数据源及 API 日志 |
-| `myblog-framework` | 保留服务依赖的公共框架 |
-| `myblog-dependencies` | Maven 依赖管理 |
-| `script/docker-compose` | 四个 Java 服务、Nuxt、管理端 Nginx、MySQL、Redis、Nacos 部署 |
-| `script/blog-admin` | 后台基础导航迁移、回滚和实施说明 |
-| `script/blog` | 博客表结构、内容菜单迁移、接口合同和发布说明 |
-| `sql` | 上游数据库初始化脚本；不是本次源码裁剪的数据删除脚本 |
+| `myblog-module-system` | 登录、账号、角色权限与系统日志 |
+| `myblog-module-infra` | 文件存储、参数、代码生成与 API 日志 |
+| `myblog-framework` / `myblog-dependencies` | 公共框架与 Maven 依赖管理 |
+| `script` | 部署编排、博客迁移、接口约定与开发示例 |
+| `sql` | 上游数据库初始化脚本 |
 
-## 已保留的后台入口
+## 常见问题
 
-- 工作台：登录用户欢迎信息，以及按权限显示的文件、个人资料和日志入口。
-- 博客内容：文章管理、资源分享、分类管理、标签管理、站点设置。
-- 媒体资源：文件管理。
-- 系统管理：管理员账号、角色与权限、登录日志、操作日志。
-- 开发运维：菜单、字典、参数、文件存储、代码生成、数据源、API 日志、Nacos。
-- 原项目资源：集中收纳 192 项原项目资源，支持搜索和分类展开。
+### 在哪里写文章、管理资源？
 
-无关企业业务源码已从当前工作树移除。为保持现有登录、鉴权及公共 API 依赖，system 内部的租户、组织、OAuth 等基础实现按依赖保留。已有数据库业务表和数据不随源码清理删除。
+完整应用启动后，访问管理后台，使用现有租户名称、管理员账号和密码登录。文章、资源、分类、标签和站点设置都在“博客内容”中管理。后台构建默认不填入账号、密码或租户名称，实际账号沿用数据库中的配置。
 
-## 构建与部署
+### 需要配置 Supabase 吗？
 
-后端在仓库根目录执行：
+阅读博客和管理内容使用现有服务即可。开启公开前台的“站长登录”时才配置 Supabase Auth；该登录目前用于显示站长身份，内容管理仍使用 Java 管理后台账号。配置步骤见[站长登录说明](blog-web/AUTH.md)。
 
-```shell
-mvn -B validate
-mvn -B package -pl myblog-gateway,myblog-module-system/myblog-module-system-server,myblog-module-infra/myblog-module-infra-server,myblog-module-blog -am -DskipTests
-```
+### 为什么后台修改后，GitHub Pages 没有更新？
 
-前端在仓库根目录执行：
+Pages 展示导出时的内容快照。新增、修改或下架内容后，需要[重新导出并发布](blog-web/README.md#github-pages-静态发布)；推送源码到 `Myblog` 仓库不会自动更新静态产物。
 
-```shell
-cd frontend
-pnpm install --frozen-lockfile
-cd ..
-node script/blog-admin/build-frontend.cjs
-```
+## 文档导航
 
-生产构建前需核对 API 地址、租户、验证码及统计配置。本机同源 API、关闭默认账号密码和原项目统计的构建命令见 [后台实施说明](script/blog-admin/README.md)。
+| 文档 | 内容 |
+| --- | --- |
+| [公开前台](blog-web/README.md) | 本地开发、路由、SSR、API 代理与静态发布 |
+| [管理后台](frontend/README.md) | 内容管理入口、开发、构建与检查 |
+| [部署指南](script/docker-compose/README.md) | 环境变量、构建、服务启动、升级与数据卷 |
+| [博客安装与维护](script/blog/README.md) | 数据库迁移、内容发布、权限与回滚 |
+| [接口约定](script/blog/CONTRACT.md) | Java、公开前台与管理后台共用的 API/DTO 合同 |
+| [站长登录配置](blog-web/AUTH.md) | 可选 Supabase 登录的配置与验证 |
+| [后台底座与迁移记录](script/blog-admin/README.md) | 导航迁移、恢复方法、已有问题与历史验收记录 |
+| [开发约定](AGENTS.md) | 主仓库、分支、提交同步和修改验证要求 |
 
-Nuxt 前台单独安装与构建，使用 Node 24.14.0、pnpm 10.32.1：
-
-```shell
-cd blog-web
-pnpm install --frozen-lockfile
-pnpm typecheck
-pnpm build
-```
-
-公开页面包括首页、文章、资源、归档、技术栈、关于和搜索；详情使用稳定 slug。配置后台站点 URL 后生成 canonical、Open Graph 与 sitemap。首次发布由服务器记录时间，保存已发布内容立即上线。数据迁移及操作顺序见 [博客实施说明](script/blog/README.md)。
-
-部署步骤见 [Docker Compose 说明](script/docker-compose/README.md)。本机公开前台 `http://127.0.0.1:3000`，后台 `http://127.0.0.1:8080`，网关 `http://127.0.0.1:48080`，Nacos 控制台 `http://127.0.0.1:18080`。发布到公网前应配置域名、HTTPS、公开文件地址及站点 URL，并更换体验账号密码。
-
-首次导入上游 SQL 后依次执行 `script/blog-admin/menu.apply.sql`、`script/blog/schema.sql`、`script/blog/menu.apply.sql`，按说明刷新必要菜单缓存，再正常退出并登录。迁移不删除旧业务表、数据或原有角色授权。仅恢复菜单不能恢复已删除源码。
-
-构建产物、依赖缓存、本机环境变量文件及认证信息不纳入源码仓库。
-
-## 上游来源与许可证
+## 来源与许可证
 
 后端来源：芋道 Cloud（`YunaiV/yudao-cloud`），基线提交 `422a95bdbe0e033b03a328efbe690e33f0eb8067`。
 
