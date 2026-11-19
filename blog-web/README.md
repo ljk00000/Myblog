@@ -86,6 +86,8 @@ docker run --rm -p 3000:3000 -e NUXT_API_BASE=http://gateway:48080/app-api/blog 
 
 正式站点使用 [GitHub Pages 自动发布](../script/blog/pages/README.md)。在后台发布、修改已发布内容或下架后，天翼云生成匿名公开快照，GitHub Actions 定时检查并重新构建。下面是本地手动导出方法，可用于验收和故障恢复。
 
+正式站点的文章详情页使用 [Hits](https://hits.sh/) 显示从启用后开始累计的浏览量。浏览器按文章路径加载独立计数图片，重复打开可能重复计数。`PAGES_ARTICLE_VIEWS=1` 仅在静态导出时启用，预览和构建不计数；计数服务不可用时隐藏数字。
+
 Pages 版本是公开内容的构建时快照，浏览器不连接本机 Java 或 Nuxt API。原 `pnpm build` / Docker 仍使用动态 SSR；静态导出不会修改数据库中的站点网址。后台新增、修改或下架内容后，需要重新导出并发布，已发布的静态内容才会更新。
 
 保持本地博客服务可用，在本目录执行：

@@ -18,7 +18,11 @@ useBlogSeo(() => ({ title: article.value?.seoTitle || article.value?.title || '�
       <div class="card-meta"><NuxtLink v-if="article.categoryId && article.categoryName" :to="{ path: '/articles', query: { categoryId: article.categoryId } }" class="category-label">{{ article.categoryName }}</NuxtLink><span v-if="article.pinned" class="badge">置顶</span></div>
       <h1>{{ article.title }}</h1>
       <p v-if="article.summary" class="detail-summary">{{ article.summary }}</p>
-      <div class="detail-meta"><time v-if="isoDate(article.publishTime)" :datetime="isoDate(article.publishTime)">{{ formatDate(article.publishTime) }}</time><span v-if="article.readingMinutes > 0">{{ article.readingMinutes }} 分钟阅读</span></div>
+      <div class="detail-meta">
+        <time v-if="isoDate(article.publishTime)" :datetime="isoDate(article.publishTime)">{{ formatDate(article.publishTime) }}</time>
+        <span v-if="article.readingMinutes > 0">{{ article.readingMinutes }} 分钟阅读</span>
+        <ArticleViews :slug="article.slug" />
+      </div>
       <div v-if="article.tags?.length" class="tag-list"><NuxtLink v-for="tag in article.tags" :key="tag.id" :to="{ path: '/articles', query: { tagId: tag.id } }"># {{ tag.name }}</NuxtLink></div>
     </header>
     <img v-if="safeUrl(article.coverUrl)" class="detail-cover" :src="safeUrl(article.coverUrl)" :alt="article.title" width="1120" height="560" fetchpriority="high">
