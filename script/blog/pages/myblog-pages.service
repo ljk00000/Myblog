@@ -1,0 +1,18 @@
+[Unit]
+Description=Collect published Myblog content for GitHub Pages
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=myblog-pages
+Group=myblog-pages
+StateDirectory=myblog-pages
+StateDirectoryMode=0750
+ExecStart=/usr/bin/bash /usr/local/lib/myblog-pages/sync.sh
+TimeoutStartSec=180
+UMask=0027
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes

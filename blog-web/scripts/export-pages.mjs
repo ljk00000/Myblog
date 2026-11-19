@@ -1,4 +1,4 @@
-import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { access, cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
@@ -12,6 +12,9 @@ const canonicalSite = siteUrl.href.replace(/\/$/, '')
 const basePath = `${siteUrl.pathname.replace(/\/$/, '')}/`
 const generatedFiles = ['pages-snapshot.json', 'robots.txt', 'sitemap.xml', '.nojekyll'].map(name => path.join(root, 'public', name))
 const writtenFiles = []
+const stagedContent = process.env.PAGES_CONTENT_DIR
+const mediaFolder = path.join(root, 'public/pages-media')
+const allowedMedia = new Set()
 const output = path.join(root, '.pages-output')
 const escapeXml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char])
 
@@ -44,7 +47,8 @@ async function content(kind) {
 function urlForPages(value, asset = false) {
   if (!value || value.startsWith('#') || value.startsWith('mailto:')) return value
   if (value.startsWith('/') && !value.startsWith('//')) {
-    if (asset && value !== '/favicon.svg') throw new Error(`A relative image needs a public URL before Pages export: ${value}`)
+    if (value.startsWith('/pages-media/') && !allowedMedia.has(value.slice('/pages-media/'.length).split('#')[0])) throw new Error('Missing staged attachment in Pages export')
+    if (asset && value !== '/favicon.svg' && !value.startsWith('/pages-media/')) throw new Error(`A relative image needs a public URL before Pages export: ${value}`)
     return `${basePath}${value.slice(1)}`
   }
   const url = new URL(value)
@@ -68,9 +72,32 @@ try {
     try { await access(file) } catch (error) { if (error.code === 'ENOENT') continue; throw error }
     throw new Error(`Refusing to replace an existing public file: ${path.basename(file)}`)
   }
-  const [site, categories, tags, archives, sitemap, articles, resources] = await Promise.all([
-    api('site/get'), api('category/list'), api('tag/list'), api('article/archives'), api('sitemap'), content('article'), content('resource'),
-  ])
+  let data
+  if (stagedContent) {
+    data = JSON.parse(await readFile(path.join(stagedContent, 'snapshot.json'), 'utf8'))
+    if (typeof data.site !== 'object' || !data.site || !['categories', 'tags', 'archives', 'sitemap', 'articles', 'resources'].every(key => Array.isArray(data[key]))) throw new Error('Invalid staged public blog snapshot')
+    for (const item of [...data.articles, ...data.resources]) {
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug)) throw new Error('Invalid staged public slug')
+    }
+    const media = path.join(stagedContent, 'media')
+    let entries = []
+    try { entries = await readdir(media, { withFileTypes: true }) } catch (error) { if (error.code !== 'ENOENT') throw error }
+    if (entries.length) {
+      await mkdir(mediaFolder)
+      writtenFiles.push(mediaFolder)
+      for (const entry of entries) {
+        if (!entry.isFile() || !/^[a-f0-9]{24}-[a-zA-Z0-9_-]+\.(png|jpg|gif|webp|avif|bmp|ico|pdf|zip|docx|xlsx|pptx|txt|log|csv|mp3|mp4|json)$/.test(entry.name)) throw new Error('Invalid staged attachment')
+        await cp(path.join(media, entry.name), path.join(mediaFolder, entry.name))
+        allowedMedia.add(entry.name)
+      }
+    }
+  } else {
+    const [site, categories, tags, archives, sitemap, articles, resources] = await Promise.all([
+      api('site/get'), api('category/list'), api('tag/list'), api('article/archives'), api('sitemap'), content('article'), content('resource'),
+    ])
+    data = { site, categories, tags, archives, sitemap, articles, resources }
+  }
+  const { site, categories, tags, archives, sitemap, articles, resources } = data
   site.siteUrl = canonicalSite
   site.avatarUrl = urlForPages(site.avatarUrl, true)
   site.githubUrl = urlForPages(site.githubUrl)
@@ -101,9 +128,10 @@ try {
   await cp(path.join(root, '../LICENSE'), path.join(output, 'LICENSE'))
   await access(path.join(output, 'index.html'))
   await access(path.join(output, '404.html'))
+  for (const name of allowedMedia) await access(path.join(output, 'pages-media', name))
   const generatedSnapshot = JSON.parse(await readFile(path.join(output, 'pages-snapshot.json'), 'utf8'))
   if (generatedSnapshot.site.siteUrl !== canonicalSite) throw new Error('Generated snapshot URL mismatch')
   console.log(JSON.stringify({ output, siteUrl: canonicalSite, articles: articles.length, resources: resources.length, staticPages: paths.length + 2 }))
 } finally {
-  for (const file of writtenFiles) await rm(file, { force: true })
+  for (const file of writtenFiles) await rm(file, { recursive: file === mediaFolder, force: true })
 }
