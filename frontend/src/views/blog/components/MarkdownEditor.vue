@@ -29,6 +29,9 @@
             <el-button :disabled="disabled || !attachmentUrl" @click="insertUrl(false)">
               插入附件链接
             </el-button>
+            <p class="mt-6px text-sm text-[var(--el-text-color-secondary)]">
+              支持 PDF、Office 文档、压缩包等。插入后可继续添加附件。
+            </p>
           </div>
         </div>
       </el-collapse-item>
@@ -72,6 +75,7 @@ import { previewContent } from '@/api/blog/content'
 import type { PreviewResult } from '@/api/blog/types'
 import { hasPermission } from '@/directives/permission/hasPermi'
 import { useMessage } from '@/hooks/web/useMessage'
+import { getFileNameFromUrl } from '@/utils/file'
 import { isContentUrl, previewPermissions } from './helpers'
 
 defineOptions({ name: 'BlogMarkdownEditor' })
@@ -117,7 +121,8 @@ const preview = async () => {
 }
 
 const insertUrl = async (image: boolean) => {
-  const url = image ? imageUrl.value : attachmentUrl.value
+  const uploadedFile = image ? imageUrl : attachmentUrl
+  const url = uploadedFile.value
   if (props.disabled || !url) return
   if (!isContentUrl(url)) {
     message.error('上传结果不是有效的 HTTP(S) 地址或本项目路径')
@@ -127,11 +132,13 @@ const insertUrl = async (image: boolean) => {
   const start = textarea?.selectionStart ?? props.modelValue.length
   const end = textarea?.selectionEnd ?? start
   const safeUrl = url.replace(/[<>()]/g, (char) => encodeURIComponent(char))
-  const insertion = `${image ? '!' : ''}[${image ? '图片' : '附件'}](<${safeUrl}>)`
+  const linkText = image ? '图片' : getFileNameFromUrl(url).replace(/[\\[\]]/g, '\\$&')
+  const insertion = `${image ? '!' : ''}[${linkText}](<${safeUrl}>)`
   emit(
     'update:modelValue',
     props.modelValue.slice(0, start) + insertion + props.modelValue.slice(end)
   )
+  uploadedFile.value = ''
   await nextTick()
   inputRef.value?.focus()
   textarea?.setSelectionRange(start + insertion.length, start + insertion.length)

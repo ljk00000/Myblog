@@ -11,7 +11,7 @@
       :http-request="httpRequest"
       :limit="props.limit"
       :multiple="props.limit > 1"
-      :on-error="excelUploadError"
+      :on-error="handleUploadError"
       :on-exceed="handleExceed"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
@@ -97,21 +97,8 @@ let emittedModelValue: string | string[] | undefined // 区分自身回写与切
 
 const { uploadUrl, httpRequest } = useUpload(props.directory)
 
-// 移除校验未通过的待上传文件
-const removeRejectedFile = (file: UploadRawFile) => {
-  const index = fileList.value.findIndex((item) => item.uid === file.uid)
-  if (index > -1) {
-    fileList.value.splice(index, 1)
-  }
-}
-
 // 文件上传之前判断
 const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
-  if (fileList.value.length >= props.limit) {
-    message.error(`上传文件数量不能超过${props.limit}个!`)
-    removeRejectedFile(file)
-    return false
-  }
   let fileExtension = ''
   if (file.name.lastIndexOf('.') > -1) {
     fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
@@ -125,12 +112,10 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
   const isLimit = file.size < props.fileSize * 1024 * 1024
   if (!isAllowedType) {
     message.error(`文件格式不正确, 请上传${props.fileType.join('/')}格式!`)
-    removeRejectedFile(file)
     return false
   }
   if (!isLimit) {
     message.error(`上传文件大小不能超过${props.fileSize}MB!`)
-    removeRejectedFile(file)
     return false
   }
   message.success('正在上传文件，请稍候...')
@@ -164,8 +149,8 @@ const handleExceed: UploadProps['onExceed'] = (): void => {
   message.error(`上传文件数量不能超过${props.limit}个!`)
 }
 // 上传错误提示
-const excelUploadError: UploadProps['onError'] = (): void => {
-  message.error('导入数据失败，请您重新上传！')
+const handleUploadError: UploadProps['onError'] = (): void => {
+  message.error('文件上传失败，请重试')
 }
 // 删除上传文件
 const handleRemove = (file: UploadFile) => {
