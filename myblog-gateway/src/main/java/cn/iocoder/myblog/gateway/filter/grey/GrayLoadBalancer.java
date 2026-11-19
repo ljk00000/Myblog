@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.myblog.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.myblog.gateway.util.EnvUtils;
+import com.alibaba.cloud.nacos.NacosServiceInstance;
 import com.alibaba.cloud.nacos.balancer.NacosBalancer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 灰度 {@link GrayLoadBalancer} 实现类
@@ -25,8 +27,7 @@ import java.util.List;
  * 1. 假如请求的 header[version] 为空，则不进行筛选，所有服务实例都进行选择
  * 2. 如果 metadata[version] 都不相等，则不进行筛选，所有服务实例都进行选择
  *
- * 注意，考虑到实现的简易，它的权重是使用 Nacos 的 nacos.weight，所以随机 + 权重也是基于 {@link NacosBalancer} 筛选。
- * 也就是说，如果你不使用 Nacos 作为注册中心，需要微调一下筛选的实现逻辑
+ * Nacos 实例按权重选取，其余实例等概率选取。
  *
  * @author 芋道源码
  */
@@ -79,8 +80,10 @@ public class GrayLoadBalancer implements ReactorServiceInstanceLoadBalancer {
         // 基于 tag 过滤实例列表
         chooseInstances = filterTagServiceInstances(chooseInstances, headers);
 
-        // 随机 + 权重获取实例列表 TODO 芋艿：目前直接使用 Nacos 提供的方法，如果替换注册中心，需要重新失败该方法
-        return new DefaultResponse(NacosBalancer.getHostByRandomWeight3(chooseInstances));
+        ServiceInstance instance = chooseInstances.stream().allMatch(NacosServiceInstance.class::isInstance)
+                ? NacosBalancer.getHostByRandomWeight3(chooseInstances)
+                : chooseInstances.get(ThreadLocalRandom.current().nextInt(chooseInstances.size()));
+        return new DefaultResponse(instance);
     }
 
     /**

@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.myblog.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.myblog.framework.env.core.context.EnvContextHolder;
 import cn.iocoder.myblog.framework.env.core.util.EnvUtils;
+import com.alibaba.cloud.nacos.NacosServiceInstance;
 import com.alibaba.cloud.nacos.balancer.NacosBalancer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 多环境的 {@link org.springframework.cloud.client.loadbalancer.LoadBalancerClient} 实现类
@@ -78,8 +80,7 @@ public class EnvLoadBalancerClient implements ReactorServiceInstanceLoadBalancer
 
         // TODO 芋艿：https://juejin.cn/post/7056770721858469896 相同网段
 
-        // 随机 + 权重获取实例列表 TODO 芋艿：目前直接使用 Nacos 提供的方法，如果替换注册中心，需要重新失败该方法
-        return new DefaultResponse(NacosBalancer.getHostByRandomWeight3(chooseInstances));
+        return chooseInstance(chooseInstances);
     }
 
     /**
@@ -99,8 +100,14 @@ public class EnvLoadBalancerClient implements ReactorServiceInstanceLoadBalancer
             chooseInstances = instances;
         }
 
-        // 随机 + 权重获取实例列表
-        return new DefaultResponse(NacosBalancer.getHostByRandomWeight3(chooseInstances));
+        return chooseInstance(chooseInstances);
+    }
+
+    private Response<ServiceInstance> chooseInstance(List<ServiceInstance> instances) {
+        ServiceInstance selected = instances.stream().allMatch(NacosServiceInstance.class::isInstance)
+                ? NacosBalancer.getHostByRandomWeight3(instances)
+                : instances.get(ThreadLocalRandom.current().nextInt(instances.size()));
+        return new DefaultResponse(selected);
     }
 
 }

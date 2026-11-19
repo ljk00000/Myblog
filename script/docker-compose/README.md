@@ -144,6 +144,8 @@ Java 包名也已更新。Redis 中此前序列化的对象可能包含旧类名
 
 ## 5. 构建并启动
 
+单机部署可在 `.env` 中留空 `COMPOSE_PROFILES`，并在 Compose 子命令前追加 `-f docker-compose.static-discovery.yml`。Java 服务按 Docker 内部服务名查找实例，并使用本地配置。迁移现有部署时，先将仍在使用的 Nacos 配置迁移至环境变量或配置文件，验证后台和公开接口后再停止旧 Nacos 服务。
+
 以下命令均在 `script/docker-compose` 目录执行：
 
 ```shell

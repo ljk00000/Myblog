@@ -1,0 +1,21 @@
+# 可选单机部署。将 .env 的 COMPOSE_PROFILES 留空，与 docker-compose.yml 一起使用。
+x-static-discovery: &static-discovery
+  SPRING_CLOUD_NACOS_CONFIG_ENABLED: "false"
+  SPRING_CLOUD_NACOS_DISCOVERY_ENABLED: "false"
+  SPRING_CONFIG_IMPORT: "optional:classpath:application-$${spring.profiles.active}.yaml"
+  SPRING_APPLICATION_JSON: >-
+    {"spring":{"cloud":{"discovery":{"client":{"simple":{"instances":{
+      "system-server":[{"uri":"http://system-server:48081"}],
+      "infra-server":[{"uri":"http://infra-server:48082"}],
+      "blog-server":[{"uri":"http://blog-server:48083"}]
+    }}}}}}}
+
+services:
+  gateway:
+    environment: *static-discovery
+  system-server:
+    environment: *static-discovery
+  infra-server:
+    environment: *static-discovery
+  blog-server:
+    environment: *static-discovery
