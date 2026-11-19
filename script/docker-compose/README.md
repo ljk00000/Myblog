@@ -65,6 +65,8 @@ node script/blog-admin/build-frontend.cjs
 
 脚本默认使用同源 `/admin-api`、保留多租户、关闭验证码、清空默认登录账号密码和原项目统计，输出到 `frontend/dist-prod`。可以通过进程环境变量覆盖部署设置；验证码开关需与后端 `MYBLOG_CAPTCHA_ENABLE` 一致。本机环境变量文件不提交。
 
+单站点部署可以在构建前将 `VITE_APP_FIXED_LOGIN_TENANT` 设为数据库中现有的租户名称。登录页只显示账号、密码和登录按钮，在登录时自动选择该租户。
+
 将 `frontend/dist-prod` 中的内容（包含 `index.html`）复制到 `script/docker-compose/web/dist/`。Windows PowerShell 可在源码根目录执行：
 
 ```powershell

@@ -15,8 +15,8 @@
           <LoginFormTitle class="w-full" />
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="px-10px">
-        <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
+      <el-col v-if="!fixedTenant && loginData.tenantEnable === 'true'" :span="24" class="px-10px">
+        <el-form-item prop="tenantName">
           <el-input
             v-model="loginData.loginForm.tenantName"
             :placeholder="t('login.tenantNamePlaceholder')"
@@ -47,7 +47,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="px-10px mt-[-20px] mb-[-20px]">
+      <el-col v-if="!fixedTenant" :span="24" class="px-10px mt-[-20px] mb-[-20px]">
         <el-form-item>
           <el-row justify="space-between" style="width: 100%">
             <el-col :span="6">
@@ -82,7 +82,7 @@
         mode="pop"
         @success="handleLogin"
       />
-      <el-col :span="24" class="px-10px">
+      <el-col v-if="!fixedTenant" :span="24" class="px-10px">
         <el-form-item>
           <el-row :gutter="5" justify="space-between" style="width: 100%">
             <el-col :span="8">
@@ -103,8 +103,8 @@
           </el-row>
         </el-form-item>
       </el-col>
-      <el-divider content-position="center">{{ t('login.otherLogin') }}</el-divider>
-      <el-col :span="24" class="px-10px">
+      <el-divider v-if="!fixedTenant" content-position="center">{{ t('login.otherLogin') }}</el-divider>
+      <el-col v-if="!fixedTenant" :span="24" class="px-10px">
         <el-form-item>
           <div class="w-full flex justify-between">
             <Icon
@@ -136,6 +136,7 @@ import * as LoginApi from '@/api/login'
 import { LoginStateEnum, useFormValid, useLoginState } from './useLogin'
 
 defineOptions({ name: 'LoginForm' })
+const props = defineProps<{ fixedTenant: string }>()
 
 const { t } = useI18n()
 const message = useMessage()
@@ -164,11 +165,11 @@ const loginData = reactive({
   captchaEnable: import.meta.env.VITE_APP_CAPTCHA_ENABLE,
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE,
   loginForm: {
-    tenantName: import.meta.env.VITE_APP_DEFAULT_LOGIN_TENANT || '',
+    tenantName: props.fixedTenant || import.meta.env.VITE_APP_DEFAULT_LOGIN_TENANT || '',
     username: import.meta.env.VITE_APP_DEFAULT_LOGIN_USERNAME || '',
     password: import.meta.env.VITE_APP_DEFAULT_LOGIN_PASSWORD || '',
     captchaVerification: '',
-    rememberMe: true // 默认记录我。如果不需要，可手动修改
+    rememberMe: !props.fixedTenant
   }
 })
 
@@ -200,8 +201,13 @@ const getCode = async () => {
 const getTenantId = async () => {
   if (loginData.tenantEnable === 'true') {
     const res = await LoginApi.getTenantIdByName(loginData.loginForm.tenantName)
+    if (props.fixedTenant && res == null) {
+      message.error(t('login.invalidTenantName'))
+      return false
+    }
     authUtil.setTenantId(res)
   }
+  return true
 }
 // 扫码登录与账号登录一样，先确定租户。
 const handleQrcodeLogin = async () => {
@@ -240,7 +246,7 @@ const handleLogin = async (params: any) => {
   loginPending = true
   loginLoading.value = true
   try {
-    await getTenantId()
+    if (!(await getTenantId())) return
     const data = await validForm()
     if (!data) {
       return
@@ -334,6 +340,7 @@ watch(
   }
 )
 onMounted(() => {
+  if (props.fixedTenant) return
   getLoginFormCache()
   getTenantByWebsite()
 })

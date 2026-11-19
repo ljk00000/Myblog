@@ -62,7 +62,7 @@ export const register = (data: RegisterVO) => {
 
 // 使用租户名，获得租户编号
 export const getTenantIdByName = (name: string) => {
-  return request.get({ url: '/system/tenant/get-id-by-name?name=' + name })
+  return request.get({ url: '/system/tenant/get-id-by-name?name=' + encodeURIComponent(name) })
 }
 
 // 使用租户域名，获得租户信息
